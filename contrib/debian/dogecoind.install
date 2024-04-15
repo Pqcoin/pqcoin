@@ -1,0 +1,2 @@
+usr/local/bin/pqcoind usr/bin
+usr/local/bin/pqcoin-cli usr/bin

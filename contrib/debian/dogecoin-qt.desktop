@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Pqcoin Core
+Comment=Connect to the Pqcoin P2P Network
+Comment[de]=Verbinde mit dem Pqcoin peer-to-peer Netzwerk
+Comment[fr]=Pqcoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Pqcoin, eşten eşe kriptografik sanal para birimi
+Exec=pqcoin-qt %u
+Terminal=false
+Type=Application
+Icon=pqcoin128
+MimeType=x-scheme-handler/pqcoin;
+Categories=Office;Finance;

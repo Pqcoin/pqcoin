@@ -1,0 +1,6 @@
+usr/local/bin/pqcoin-qt usr/bin
+share/pixmaps/pqcoin32.xpm usr/share/pixmaps
+share/pixmaps/pqcoin16.xpm usr/share/pixmaps
+share/pixmaps/pqcoin128.png usr/share/pixmaps
+debian/pqcoin-qt.desktop usr/share/applications
+debian/pqcoin-qt.protocol usr/share/kde4/services/

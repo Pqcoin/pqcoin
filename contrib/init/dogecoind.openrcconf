@@ -1,0 +1,33 @@
+# /etc/conf.d/pqcoind: config file for /etc/init.d/pqcoind
+
+# Config file location
+#PQCOIND_CONFIGFILE="/etc/pqcoin/pqcoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $PQCOIND_USER)
+#PQCOIND_PIDDIR="/var/run/pqcoind"
+
+# What filename to give the pidfile
+#PQCOIND_PIDFILE="${PQCOIND_PIDDIR}/pqcoind.pid"
+
+# Where to write pqcoind data (be mindful that the blockchain is large)
+#PQCOIND_DATADIR="/var/lib/pqcoind"
+
+# User and group to own pqcoind process
+#PQCOIND_USER="pqcoin"
+#PQCOIND_GROUP="pqcoin"
+
+# Path to pqcoind executable
+#PQCOIND_BIN="/usr/bin/pqcoind"
+
+# Nice value to run pqcoind under
+#PQCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+PQCOIND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for pqcoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+PQCOIND_SIGTERM_TIMEOUT=60
