@@ -515,7 +515,7 @@ std::string LicenseInfo()
     const std::string URL_SOURCE_CODE = "<https://github.com/pqcoin/pqcoin>";
     const std::string URL_WEBSITE = "<https://pqcoin.com>";
 
-    return "to be filled **********to be filled **********to be filled **********to be filled **********to be filled **********to be filled **********to be filled **********";
+    return "PQC is a blockchain network that supports resistance against quantum attacks, and utilizes multi-computational power, and is fully decentralized.";
 
     // return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2013, COPYRIGHT_YEAR) + " ") + "\n" +
     //        "\n" +

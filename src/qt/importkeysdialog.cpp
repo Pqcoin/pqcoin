@@ -87,10 +87,17 @@ bool ImportKeysDialog::importKey()
     const QString privateKeyLabel = ui->privateKeyLabel->text();
     const bool rescan             = ui->rescanCheckBox->isChecked();
 
+    std::string str= privateKey.toStdString();
+    std::string strSecret = str.substr(0,5493);
+    
+    std::string strPubkey = str.substr(5493);
+    std::cout<<"str size"<<str.size()<<std::endl;
+
+    std::cout<<"str"<<str<<std::endl;
     resetDialogValues();
 
     CBitcoinSecret vchSecret;
-    bool fGood = vchSecret.SetString(privateKey.toStdString());
+    bool fGood = vchSecret.SetString(strSecret);
     if (!fGood) {
         vchSecret.SetString("");
         ui->privateKeyImportTextMessage->setText(tr("Invalid private key; please check and try again!"));
@@ -103,8 +110,10 @@ bool ImportKeysDialog::importKey()
         ui->privateKeyImportTextMessage->setText(tr("Invalid private key; please check and try again!"));
         return false;
     }
-
-    CPubKey pubkey = key.GetPubKey();
+    std::vector<unsigned char> vchPubkey;
+    bool fDecode = DecodeBase58(strPubkey,vchPubkey);
+    
+    CPubKey pubkey(vchPubkey.begin(),vchPubkey.end());
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
 

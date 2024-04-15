@@ -1915,7 +1915,6 @@ CAmount CWallet::GetBalance() const
                 nTotal += pcoin->GetAvailableCredit();
         }
     }
-    std::cout<<"wallettimes"<<time<<std::endl;
     return nTotal;
 }
 

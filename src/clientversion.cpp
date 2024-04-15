@@ -13,7 +13,7 @@
  * for both bitcoind and bitcoin-core, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Shibetoshi");
+const std::string CLIENT_NAME("Maxwell");
 
 /**
  * Client version number
@@ -46,7 +46,7 @@ const std::string CLIENT_NAME("Shibetoshi");
 #define GIT_ARCHIVE 1
 #ifdef GIT_ARCHIVE
 #define GIT_COMMIT_ID "3a29ba6d49"
-#define GIT_COMMIT_DATE "Mon, 18 Jul 2022 15:54:00 -0700"
+#define GIT_COMMIT_DATE "Mon, 22 Apr 2024 08:00:00 -0700"
 #endif
 
 #define BUILD_DESC_WITH_SUFFIX(maj, min, rev, build, suffix) \

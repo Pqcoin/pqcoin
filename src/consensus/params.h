@@ -62,6 +62,7 @@ struct Params {
     uint32_t nCoinbaseMaturity;
     /** Proof of work parameters */
     uint256 powLimit;
+    uint256 initPowDifficulty;
     bool fPowAllowMinDifficultyBlocks;
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;

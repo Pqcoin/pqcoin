@@ -116,6 +116,7 @@ UniValue importprivkey(const JSONRPCRequest& request)
     std::string strPubkey = str.substr(5493);
 //    std::cout<<strSecret<<std::endl;
 //    std::cout<<strPubkey<<std::endl;
+    std::cout<<str.size()<<std::endl;
     string strLabel = "";
     if (request.params.size() > 1)
         strLabel = request.params[1].get_str();
