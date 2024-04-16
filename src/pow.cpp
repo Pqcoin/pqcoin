@@ -53,7 +53,10 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
                                                  : params.DifficultyAdjustmentInterval();
     //std::cout << "nPowTargetTimespan: " << params.nPowTargetTimespan <<  " nPowTargetSpacing: " << params.nPowTargetSpacing << std::endl;
     //std::cout << "difficultyAdjustmentInterval: " << difficultyAdjustmentInterval << std::endl;
-
+    if(pindexLast->nHeight == 0) {
+//        std::cout<<"now it is the first mine block:"<<std::endl;
+        return UintToArith256(params.initPowDifficulty).GetCompact();
+    }
     if ((pindexLast->nHeight+1) % difficultyAdjustmentInterval != 0)
     {
         if (params.fPowAllowMinDifficultyBlocks)

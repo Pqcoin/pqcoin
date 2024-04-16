@@ -227,7 +227,10 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     UpdateTime(pblock, consensus, pindexPrev);
 
     //wh_init_ltc_nBits
-    if (ltc_nBits.empty()) ltc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+    if (ltc_nBits.empty()) {
+//        std::cout<<"ltc_nBits init::"<<UintToArith256(consensus.initPowDifficulty).GetCompact()<<std::endl;
+        ltc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+    }
     if (btc_nBits.empty()) btc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
 
     pblock->nBits  = GetNextWorkRequired(pindexPrev, pblock, consensus); 

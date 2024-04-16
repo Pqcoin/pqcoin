@@ -100,7 +100,8 @@ public:
         consensus.BIP65Height = 3464751; // 34cd2cbba4ba366f47e5aa0db5f02c19eba2adf679ceb6653ac003bdc9a0ef1f - first v4 block after the last v3 block
         consensus.BIP66Height = 1034383; // 80d1364201e5df97e696c03bdd24dc885e8617b9de51e453c10a4f629b1e797a - this is the last block that could be v2, 1900 blocks past the last v2 block
         consensus.powLimit = uint256S("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 20;
-        consensus.initPowDifficulty = uint256S("0x207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.initPowDifficulty = uint256S("0x0002bffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+
         //wh_difficuly
         // consensus.nPowTargetTimespan = 4 * 60; // 
         // consensus.nPowTargetSpacing = 60; // 
@@ -175,21 +176,8 @@ public:
         pchMessageStart[3] = 0xc4;
         nDefaultPort = 7332;
         nPruneAfterHeight = 100000;
-        for (int (i) = 0; (i) < 100; ++(i)) {
-            genesis = CreateGenesisBlock(1681098301, i, 0x207fffff, 1, 12000000 * COIN);
-            bool fNegative;
-            bool fOverflow;
-            arith_uint256 bnTarget;
-
-            bnTarget.SetCompact(0x207fffff, &fNegative, &fOverflow);
-            if (UintToArith256(genesis.GetPoWHash()) > bnTarget) {
-                std::cout<<i<<std::endl;
-            }
-            else {
-                std::cout<<"it work"<<i<<std::endl;
-                break;
-            }
-        }
+        genesis = CreateGenesisBlock(1681098301, 1, 0x207fffff, 1, 12000000 * COIN);
+//        std::cout<<genesis.GetHash().ToString()<<std::endl;
 
         //printf("%s\n",genesis.GetHash().ToString().c_str());
         // printf("%d\n",genesis.GetHash());
@@ -205,11 +193,11 @@ public:
     // genesis.hashPrevBlock.SetNull();
     // genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
 
-        std::cout<<genesis.GetHash().ToString()<<std::endl;
+
         consensus.hashGenesisBlock = genesis.GetHash();
         digishieldConsensus.hashGenesisBlock = consensus.hashGenesisBlock;
         auxpowConsensus.hashGenesisBlock = consensus.hashGenesisBlock;
-//        assert(consensus.hashGenesisBlock == uint256S("0xd1fe73b87f5b2263faf24bbda99eec05b35d5d6d4eec83a9e6a87acbdf1e84e1"));
+        assert(consensus.hashGenesisBlock == uint256S("0xa5720dd5637aed5167ccc084c19020751624e8d801ceb41d54f4477c887812b9"));
 //        assert(genesis.hashMerkleRoot == uint256S("0x3e8d1c67030da19c37775237b858508f53b7867eb0b444adae944cbe0d30520f"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
