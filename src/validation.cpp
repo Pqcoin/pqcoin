@@ -3343,7 +3343,7 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
     //wh_dump
     //Write block to history file
     try {
-        //获取最近一个区块的大小，单位字节
+
         unsigned int nBlockSize = ::GetSerializeSize(block, SER_DISK, CLIENT_VERSION);
         //std::cout << "nBlockSize: " << nBlockSize << std::endl;
         CDiskBlockPos blockPos;

@@ -265,4 +265,4 @@ ltc_nBits: 4.65654e-10    ltc_count: 2016       btc_nBits: 4.65654e-10     btc_c
 ltc_nBits: 4.65654e-10    ltc_count: 2016       btc_nBits: 4.65654e-10     btc_count: 0          nHeight: 6048       2024-04-10 22:23:26
 ltc_nBits: 4.65655e-08    ltc_count: 2016       btc_nBits: 4.65654e-07     btc_count: 0          nHeight: 8064       2024-04-10 22:23:28
 ltc_nBits: 2.32827e-07    ltc_count: 2016       btc_nBits: 1.86262e-06     btc_count: 0          nHeight: 10080      2024-04-10 22:25:36
-ltc_nBits:     1.83396e-09ltc_count:       2016 btc_nBits:     1.83396e-09 btc_count:          0 nHeight:       2016 2024-04-15 08:02:57
+ltc_nBits:     1.83396e-09 ltc_count:       2016 btc_nBits:     1.83396e-09 btc_count:          0 nHeight:       2016 2024-04-15 08:02:57

@@ -114,9 +114,7 @@ UniValue importprivkey(const JSONRPCRequest& request)
     std::string str= request.params[0].get_str();
     std::string strSecret = str.substr(0,5493);
     std::string strPubkey = str.substr(5493);
-//    std::cout<<strSecret<<std::endl;
-//    std::cout<<strPubkey<<std::endl;
-    std::cout<<str.size()<<std::endl;
+    
     string strLabel = "";
     if (request.params.size() > 1)
         strLabel = request.params[1].get_str();
@@ -141,16 +139,12 @@ UniValue importprivkey(const JSONRPCRequest& request)
     bool fDecode = DecodeBase58(strPubkey,vchPubkey);
 
     if(!fDecode) std::cout<<"decode failed"<<std::endl;
-    for (const auto& byte : vchPubkey) {
-        std::cout<< std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
-    }
-    cout<<endl;
-//    std::cout<<vchPubkey.size()<<std::endl;
+
     CPubKey pubkey(vchPubkey.begin(),vchPubkey.end());
     if(!pubkey.IsValid())  throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Public key outside allowed range");
-//    const unsigned char* pk = pubkey.begin();
+
     key.Load(privkey,pubkey,0);
-//    std::cout<<pk<<endl;
+
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
     {
@@ -423,7 +417,6 @@ UniValue importpubkey(const JSONRPCRequest& request)
 
     ImportAddress(CBitcoinAddress(pubKey.GetID()), strLabel);
     CBitcoinAddress add(pubKey.GetID());
-//    std::cout<<add.ToString()<<std::endl;
     ImportScript(GetScriptForRawPubKey(pubKey), strLabel, false);
 
     if (fRescan)
@@ -476,7 +469,6 @@ UniValue importwallet(const JSONRPCRequest& request)
     file.seekg(0, file.beg);
 
     pwalletMain->ShowProgress(_("Importing..."), 0); // show progress dialog in GUI
-    cout<<"while start"<<endl;
     while (file.good()) {
         pwalletMain->ShowProgress("", std::max(1, std::min(99, (int)(((double)file.tellg() / (double)nFilesize) * 100))));
         std::string line;
@@ -488,7 +480,6 @@ UniValue importwallet(const JSONRPCRequest& request)
         boost::split(vstr, line, boost::is_any_of(" "));
         if (vstr.size() < 2)
             continue;
-        cout<<"vstr s"<<endl;
         string str = vstr[0];
         string strSecret = str.substr(0,5493);
         string strPubkey = str.substr(5493);
@@ -496,24 +487,20 @@ UniValue importwallet(const JSONRPCRequest& request)
         CBitcoinSecret vchSecret;
         if (!vchSecret.SetString(strSecret))
             continue;
-        cout<<"vchSecret s"<<endl;
-        //
+        
         CKey key = vchSecret.GetKey();
-//        CPrivKey privkey = key.GetPrivKey();
+
         vector<unsigned char>vchPubkey;
         bool fDecode = DecodeBase58(strPubkey,vchPubkey);
         if(!fDecode) cout<<"decode failed"<<endl;
-        //cout<<vchPubkey.size()<<endl;
 
         CPubKey pubkey(vchPubkey.begin(),vchPubkey.end());
-        //CPubKey pubkey = key.GetPubKey();
         assert(key.VerifyPubKey(pubkey));
         CKeyID keyid = pubkey.GetID();
         if (pwalletMain->HaveKey(keyid)) {
             LogPrintf("Skipping import of %s (key already present)\n", CBitcoinAddress(keyid).ToString());
             continue;
         }
-        cout<<"pwallertMain s"<<endl;
         int64_t nTime = DecodeDumpTime(vstr[1]);
         std::string strLabel;
         bool fLabel = true;
@@ -534,14 +521,11 @@ UniValue importwallet(const JSONRPCRequest& request)
             fGood = false;
             continue;
         }
-        cout<<"pwalletMain->AddKeyPubKey(key, pubkey) s"<<endl;
         pwalletMain->mapKeyMetadata[keyid].nCreateTime = nTime;
         if (fLabel)
             pwalletMain->SetAddressBook(keyid, strLabel, "receive");
-        cout<<"fLable s"<<endl;
         nTimeBegin = std::min(nTimeBegin, nTime);
     }
-    cout<<"while end"<<endl;
     file.close();
     pwalletMain->ShowProgress("", 100); // hide progress dialog in GUI
     pwalletMain->UpdateTimeFirstKey(nTimeBegin);
@@ -596,9 +580,6 @@ UniValue dumpprivkey(const JSONRPCRequest& request)
     vch.insert(vch.end(), pubkey.begin(), pubkey.end());
     string secpubkey;
     secpubkey.append(CBitcoinSecret(vchSecret).ToString()+EncodeBase58(vch));
-    cout<<"secpubkey.size"<<EncodeBase58Check(vch).size()<<endl;
-    cout<<"secpubkey.size"<<secpubkey.size()<<endl;
-    cout<<"skey"<<CBitcoinSecret(vchSecret).ToString()<<endl;
     return secpubkey;
 }
 
@@ -687,8 +668,6 @@ UniValue dumpwallet(const JSONRPCRequest& request) {
             string secpubkey;
             secpubkey.append(CBitcoinSecret(key).ToString() + EncodeBase58(vch));
 
-            //cout<<"private len: "<<CBitcoinSecret(key).ToString().size()<<endl; 5493
-            //cout<<"public len: "<<secpubkey.size()<<endl; 8160
 
             file << strprintf("%s %s ", secpubkey, strTime);
             if (pwalletMain->mapAddressBook.count(keyid)) {

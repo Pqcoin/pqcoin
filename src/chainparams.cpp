@@ -35,17 +35,7 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
     genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
     genesis.hashPrevBlock.SetNull();
     genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
-    // printf("%d\n",genesis.nTime);
-    // printf("%d\n",genesis.nBits);
-    // printf("%d\n",genesis.nNonce);
-    // printf("%d\n",genesis.nVersion);
-    // printf("%s\n",genesis.hashMerkleRoot.ToString().c_str());
-    // LogPrintf("hashMerkleRoot******** %s\n", genesis.hashMerkleRoot);
-    // LogPrint(genesis.nTime);
-    // LogPrint(genesis.nBits);
-    // LogPrint(genesis.nNonce);
-    // LogPrint(genesis.nVersion);
-    // LogPrint(genesis.hashMerkleRoot);
+
 
     return genesis;
 }
@@ -100,14 +90,11 @@ public:
         consensus.BIP65Height = 3464751; // 34cd2cbba4ba366f47e5aa0db5f02c19eba2adf679ceb6653ac003bdc9a0ef1f - first v4 block after the last v3 block
         consensus.BIP66Height = 1034383; // 80d1364201e5df97e696c03bdd24dc885e8617b9de51e453c10a4f629b1e797a - this is the last block that could be v2, 1900 blocks past the last v2 block
         consensus.powLimit = uint256S("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 20;
-        consensus.initPowDifficulty = uint256S("0x207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        //wh_difficuly
-        // consensus.nPowTargetTimespan = 4 * 60; // 
-        // consensus.nPowTargetSpacing = 60; // 
-        consensus.nPowTargetTimespan = 7*24*60*60;   // 2016块调整一次
-        consensus.nPowTargetSpacing = 300;   // 期望300秒出一个块
+        consensus.initPowDifficulty = uint256S("0x207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
+        consensus.nPowTargetTimespan = 7*24*60*60;   
+        consensus.nPowTargetSpacing = 300;   
 
-        //std::cout << "aaa" << std::endl;
+
 
         consensus.fDigishieldDifficultyCalculation = false;
         consensus.nCoinbaseMaturity = 30;
@@ -151,7 +138,7 @@ public:
         digishieldConsensus.fDigishieldDifficultyCalculation = true;
 
         //wh_nPowTargetTimespan
-        digishieldConsensus.nPowTargetTimespan =  7*24*60*60; // 真实的nPowTargetTimespan
+        digishieldConsensus.nPowTargetTimespan =  7*24*60*60; // real nPowTargetTimespan
         digishieldConsensus.nCoinbaseMaturity = 240;
 
         // Blocks 371337+ are AuxPoW
@@ -183,38 +170,20 @@ public:
 
             bnTarget.SetCompact(0x207fffff, &fNegative, &fOverflow);
             if (UintToArith256(genesis.GetPoWHash()) > bnTarget) {
-                std::cout<<i<<std::endl;
+                //std::cout<<i<<std::endl;
             }
             else {
-                std::cout<<"it work"<<i<<std::endl;
+                //std::cout<<"it work"<<i<<std::endl;
                 break;
             }
         }
 
-        //printf("%s\n",genesis.GetHash().ToString().c_str());
-        // printf("%d\n",genesis.GetHash());
-        // LogPrint(genesis);
-        //  LogPrint(genesis.nTime);
-        //  LogPrint(consensus.hashGenesisBlock);
-    //       CBlock genesis;
-    // genesis.nTime    = nTime;
-    // genesis.nBits    = nBits;
-    // genesis.nNonce   = nNonce;
-    // genesis.nVersion = nVersion;
-    // genesis.vtx.push_back(MakeTransactionRef(std::move(txNew)));
-    // genesis.hashPrevBlock.SetNull();
-    // genesis.hashMerkleRoot = BlockMerkleRoot(genesis);
 
-        std::cout<<genesis.GetHash().ToString()<<std::endl;
+
+        //std::cout<<genesis.GetHash().ToString()<<std::endl;
         consensus.hashGenesisBlock = genesis.GetHash();
         digishieldConsensus.hashGenesisBlock = consensus.hashGenesisBlock;
         auxpowConsensus.hashGenesisBlock = consensus.hashGenesisBlock;
-//        assert(consensus.hashGenesisBlock == uint256S("0xd1fe73b87f5b2263faf24bbda99eec05b35d5d6d4eec83a9e6a87acbdf1e84e1"));
-//        assert(genesis.hashMerkleRoot == uint256S("0x3e8d1c67030da19c37775237b858508f53b7867eb0b444adae944cbe0d30520f"));
-
-        // Note that of those with the service bits flag, most only support a subset of possible options
-        // vSeeds.push_back(CDNSSeedData("multidoge.org", "seed.multidoge.org", true));
-        // vSeeds.push_back(CDNSSeedData("multidoge.org", "seed2.multidoge.org"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,30);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,22);

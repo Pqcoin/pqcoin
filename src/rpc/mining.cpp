@@ -1534,16 +1534,6 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
     uint32_t coinBaseSize;
     memcpy(&coinBaseSize, ptr, 4);
     ptr += 4;
-    // string str;
-    // str.resize(coinBaseSize);
-    // str.assign(ptr, ptr + coinBaseSize);
-    // //验证 hash 写到了父链的 coinbase
-    // int pos = str.find(hash.ToString());
-    // //std::cout << "npos: " << string::npos << "  pos:" << pos <<  std::endl;
-    // //std::cout << "hash: " << hash.GetHex() << std::endl;
-    // if (pos != str.npos) {
-    //     cout << "find hash in coinbase" << endl;
-    // }
     submitblock_StateCatcher sc(block.GetHash());
     RegisterValidationInterface(&sc);
     std::shared_ptr<const CBlock> shared_block = std::make_shared<const CBlock>(block);
@@ -1660,16 +1650,7 @@ int SubmitAuxBlock(const char buf[])
     uint32_t coinBaseSize;
     memcpy(&coinBaseSize, ptr, 4);
     ptr += 4;
-    // string str;
-    // str.resize(coinBaseSize);
-    // str.assign(ptr, ptr + coinBaseSize);
-    // //验证 hash 写到了父链的 coinbase
-    // int pos = str.find(hash.ToString());
-    // //std::cout << "npos: " << string::npos << "  pos:" << pos <<  std::endl;
-    // //std::cout << "hash: " << hash.GetHex() << std::endl;
-    // if (pos != str.npos) {
-    //     cout << "find hash in coinbase" << endl;
-    // }
+
     submitblock_StateCatcher sc(block.GetHash());
     RegisterValidationInterface(&sc);
     std::shared_ptr<const CBlock> shared_block = std::make_shared<const CBlock>(block);
@@ -1862,22 +1843,22 @@ uint32_t stringToUint32(const std::string& str) {
         size_t pos;
         uint32_t result = std::stoi(str, &pos);
 
-        // 检查是否整个字符串都被解析
+        
         if (pos != str.length()) {
-            // 如果没有完全解析，你可以在这里处理错误，比如抛出异常或返回一个默认值
+            
             throw std::invalid_argument("Not a valid uint32_t value");
         }
 
         return result;
     } catch (const std::out_of_range& e) {
-        // 处理超出范围的异常
+
         std::cerr << "Out of range error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
+       
         throw;
     } catch (const std::invalid_argument& e) {
-        // 处理无效参数异常
+    
         std::cerr << "Invalid argument error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
+
         throw;
     }
 }
@@ -1886,22 +1867,16 @@ int stringToInt(const std::string& str) {
         size_t pos;
         int result = std::stoi(str, &pos);
 
-        // 检查是否整个字符串都被解析
         if (pos != str.length()) {
-            // 如果没有完全解析，你可以在这里处理错误，比如抛出异常或返回一个默认值
             throw std::invalid_argument("Not a valid int value");
         }
 
         return result;
     } catch (const std::out_of_range& e) {
-        // 处理超出范围的异常
         std::cerr << "Out of range error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
         throw;
     } catch (const std::invalid_argument& e) {
-        // 处理无效参数异常
         std::cerr << "Invalid argument error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
         throw;
     }
 }

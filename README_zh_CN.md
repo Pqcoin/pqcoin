@@ -14,7 +14,7 @@
 
 皮球币网络默认交易费的相关信息请查看[收费建议](doc/fee-recommendation.md)
 
-**网址:** [pqcoin.com](https://pqcwebsite.vercel.app/)
+**网址:** [pqcoin.net](https://www.pqcoin.net)
 
 ## 使用指南 💻
 

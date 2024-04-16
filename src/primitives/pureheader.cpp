@@ -17,13 +17,12 @@ void CPureBlockHeader::SetBaseVersion(int32_t nBaseVersion, int32_t nChainId)
     nVersion = nBaseVersion | (nChainId * VERSION_CHAIN_START);
 }
 
-//GetHash是计算区块头的哈希，主要用于索引区块
+
 uint256 CPureBlockHeader::GetHash() const
 {
     return SerializeHash(*this);
 }
 
-//GetPowHash计算用于pow的哈希，也是区块头哈希，用于pow而不是索引
 uint256 CPureBlockHeader::GetPoWHash() const
 {
     uint256 thash;
