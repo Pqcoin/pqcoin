@@ -2,7 +2,7 @@ include sources.mk
 
 .PHONY: gen FORCE
 .INTERMEDIATE: $(GENBIN)
-
+ACLOCAL_AMFLAGS = -I build-aux/m4
 include_HEADERS = $(UNIVALUE_DIST_HEADERS_INT)
 noinst_HEADERS = $(UNIVALUE_LIB_HEADERS_INT)
 
