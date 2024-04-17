@@ -45,8 +45,6 @@ AC_SUBST(LIBUNIVALUE_AGE)
 LT_INIT
 LT_LANG([C++])
 
-dnl Require C++11 compiler (no GNU extensions)
-AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory], [nodefault])
 
 case $host in
   *mingw*)
