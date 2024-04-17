@@ -165,8 +165,6 @@ CPubKey CKey::GetPubKey() const {
     unsigned char* pch = (unsigned char *)pubkey.begin();
     memcpy(pch+1,pubkeydata.data(), pubkeydata.size());
     pch[0] = 7;
-//    CKeyID id = pubkey.GetID();
-//    std::cout<<"key id"<<id.GetHex()<<std::endl;
     return pubkey;
 }
 

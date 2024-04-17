@@ -1464,7 +1464,6 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
 }
 
  static int cmx_submit_Auxblock(const std::string hashHex , const std::string auxpowHex){
-    std::cout<<"cmx_submit"<<endl;
     
     uint256 hash;
     hash.SetHex(hashHex) ;
@@ -1476,20 +1475,16 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
     const std::map<uint256, CBlock*>::iterator mit = mapNewBlock.find(hash);
     
     if (mit == mapNewBlock.end()) {
-        std::cout<<"hash map wrong1"<<endl;
         // throw JSONRPCError(RPC_INVALID_PARAMETER, "block hash  ");
         return -1;
         
     }
-     std::cout<<"mapnew "<<endl;
     CBlock& block = *(mit->second);
     if (block.auxpow) return -1;
     
     CAuxPow aux;
     block.auxpow = boost::make_shared<CAuxPow>(aux);
-     std::cout<<"  block.auxpow"<<endl;
     if (!block.auxpow) {
-        std::cout<<"aux pow wrong"<<endl;
         perror("auxpow is null!\n");
         exit(-1);
     }
@@ -1538,7 +1533,6 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
     RegisterValidationInterface(&sc);
     std::shared_ptr<const CBlock> shared_block = std::make_shared<const CBlock>(block);
     bool fAccepted = ProcessNewBlock(Params(), shared_block, true, nullptr);
-    std::cout<<"fa"<<fAccepted<<endl;
     static int count = 0;
     static int count_ltc = 0;
     static int count_btc = 0;
@@ -1595,7 +1589,7 @@ int SubmitAuxBlock(const char buf[])
     const std::map<uint256, CBlock*>::iterator mit = mapNewBlock.find(hash);
     
     if (mit == mapNewBlock.end()) {
-        std::cout<<"hash map wrong"; 
+        //std::cout<<"hash map wrong"; 
         throw JSONRPCError(RPC_INVALID_PARAMETER, "block hash unknown");
         return 3;
        
@@ -1605,7 +1599,7 @@ int SubmitAuxBlock(const char buf[])
     CAuxPow aux;
     block.auxpow = boost::make_shared<CAuxPow>(aux);
     if (!block.auxpow) {
-        std::cout<<"auxpow  wrong"<<endl;
+        //std::cout<<"auxpow  wrong"<<endl;
         perror("auxpow is null!\n");
         exit(-1);
     }
