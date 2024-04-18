@@ -1,8 +1,4 @@
-/*
-并行版本
-对应算法9
-未处理最后一行的modq运算
-*/
+
 
 #include <stdio.h>
 #include <stdint.h>

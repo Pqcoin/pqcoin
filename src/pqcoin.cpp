@@ -150,7 +150,7 @@ unsigned int CalculatePqcoinNextWorkRequired_new(const CBlockIndex *pindexLast, 
     file << retargetTimespan;
     file << std::endl;
     file << nHeight << "   " << timeString << std::endl;
-    // pqcoin 和litecoin的难度值一致
+  
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
     arith_uint256 bnNew_pq;
     bnNew_pq.SetCompact(ltc_nBits.back());
@@ -168,12 +168,12 @@ void CalculatecoinNextWorkRequired_only_aux(const CBlockIndex *pindexLast, const
     const CBlockIndex *pindexFirst;
     if (nHeight > params.DifficultyAdjustmentInterval())
         //consensus.DifficultyAdjustmentInterval()
-        pindexFirst = pindexLast->GetAncestor(nHeight - params.DifficultyAdjustmentInterval()); // 追溯720个块
+        pindexFirst = pindexLast->GetAncestor(nHeight - params.DifficultyAdjustmentInterval()); 
     else
         pindexFirst = pindexLast->GetAncestor(nHeight - 1);
 
-    const int64_t retargetTimespan = params.nPowTargetTimespan;                               // 目标时间间隔
-    const int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime(); // 选择的父链实际的时间跨度
+    const int64_t retargetTimespan = params.nPowTargetTimespan;                               
+    const int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime(); 
 
     vector<uint32_t> y_n(4);
     vector<uint32_t> x_n(4);
@@ -215,7 +215,7 @@ void CalculatecoinNextWorkRequired_only_aux(const CBlockIndex *pindexLast, const
     file << "A/T:  " << A_T << std::endl;
 
     // Limit adjustment step
-    // 用float的精度存储中间变量
+
     double temp_btc_1;
     double temp_ltc_1;
     double proportion_b_l = 10.0;
@@ -512,8 +512,8 @@ void CalculatecoinNextWorkRequired_only_aux_720blocks(const CBlockIndex *pindexL
     else
         pindexFirst = pindexLast->GetAncestor(nHeight - 1);
 
-    const int64_t retargetTimespan = params.nPowTargetTimespan;                               // 目标时间间隔
-    const int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime(); // 选择的父链实际的时间跨度
+    const int64_t retargetTimespan = params.nPowTargetTimespan;                               
+    const int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime(); 
 
     vector<uint32_t> y_n(4);
     vector<uint32_t> x_n(4);
@@ -555,7 +555,7 @@ void CalculatecoinNextWorkRequired_only_aux_720blocks(const CBlockIndex *pindexL
     file << "A/T:  " << A_T << std::endl;
 
     // Limit adjustment step
-    // 用float的精度存储中间变量
+
     double temp_btc_1;
     double temp_ltc_1;
     double proportion_b_l = 10.0;

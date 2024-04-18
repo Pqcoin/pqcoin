@@ -51,13 +51,10 @@ double GetDifficulty(const CBlockIndex* blockindex)
     // minimum difficulty = 1.0.
     if (blockindex == NULL)
     {
-        //std::cout << "aaa" << std::endl;
         if (chainActive.Tip() == NULL) {
-            //std::cout << "bbb" << std::endl;
             return 1.0;
         } else
             blockindex = chainActive.Tip();
-            //std::cout << "genius nbits: " << blockindex->nBits << std::endl;
     }
 
     int nShift = (blockindex->nBits >> 24) & 0xff;

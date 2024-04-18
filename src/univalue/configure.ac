@@ -45,6 +45,10 @@ AC_SUBST(LIBUNIVALUE_AGE)
 LT_INIT
 LT_LANG([C++])
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 14ee81c3d89ce99db8c58bef35983614ec0ed4ce
 case $host in
   *mingw*)
     LIBTOOL_APP_LDFLAGS="$LIBTOOL_APP_LDFLAGS -all-static"

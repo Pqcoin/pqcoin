@@ -1464,7 +1464,6 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
 }
 
  static int cmx_submit_Auxblock(const std::string hashHex , const std::string auxpowHex){
-    std::cout<<"cmx_submit"<<endl;
     
     uint256 hash;
     hash.SetHex(hashHex) ;
@@ -1476,20 +1475,16 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
     const std::map<uint256, CBlock*>::iterator mit = mapNewBlock.find(hash);
     
     if (mit == mapNewBlock.end()) {
-        std::cout<<"hash map wrong1"<<endl;
         // throw JSONRPCError(RPC_INVALID_PARAMETER, "block hash  ");
         return -1;
         
     }
-     std::cout<<"mapnew "<<endl;
     CBlock& block = *(mit->second);
     if (block.auxpow) return -1;
     
     CAuxPow aux;
     block.auxpow = boost::make_shared<CAuxPow>(aux);
-     std::cout<<"  block.auxpow"<<endl;
     if (!block.auxpow) {
-        std::cout<<"aux pow wrong"<<endl;
         perror("auxpow is null!\n");
         exit(-1);
     }
@@ -1534,21 +1529,10 @@ static bool AuxMiningSubmitBlock(const std::string& hashHex, const std::string& 
     uint32_t coinBaseSize;
     memcpy(&coinBaseSize, ptr, 4);
     ptr += 4;
-    // string str;
-    // str.resize(coinBaseSize);
-    // str.assign(ptr, ptr + coinBaseSize);
-    // //验证 hash 写到了父链的 coinbase
-    // int pos = str.find(hash.ToString());
-    // //std::cout << "npos: " << string::npos << "  pos:" << pos <<  std::endl;
-    // //std::cout << "hash: " << hash.GetHex() << std::endl;
-    // if (pos != str.npos) {
-    //     cout << "find hash in coinbase" << endl;
-    // }
     submitblock_StateCatcher sc(block.GetHash());
     RegisterValidationInterface(&sc);
     std::shared_ptr<const CBlock> shared_block = std::make_shared<const CBlock>(block);
     bool fAccepted = ProcessNewBlock(Params(), shared_block, true, nullptr);
-    std::cout<<"fa"<<fAccepted<<endl;
     static int count = 0;
     static int count_ltc = 0;
     static int count_btc = 0;
@@ -1605,7 +1589,7 @@ int SubmitAuxBlock(const char buf[])
     const std::map<uint256, CBlock*>::iterator mit = mapNewBlock.find(hash);
     
     if (mit == mapNewBlock.end()) {
-        std::cout<<"hash map wrong"; 
+        //std::cout<<"hash map wrong"; 
         throw JSONRPCError(RPC_INVALID_PARAMETER, "block hash unknown");
         return 3;
        
@@ -1615,7 +1599,7 @@ int SubmitAuxBlock(const char buf[])
     CAuxPow aux;
     block.auxpow = boost::make_shared<CAuxPow>(aux);
     if (!block.auxpow) {
-        std::cout<<"auxpow  wrong"<<endl;
+        //std::cout<<"auxpow  wrong"<<endl;
         perror("auxpow is null!\n");
         exit(-1);
     }
@@ -1660,16 +1644,7 @@ int SubmitAuxBlock(const char buf[])
     uint32_t coinBaseSize;
     memcpy(&coinBaseSize, ptr, 4);
     ptr += 4;
-    // string str;
-    // str.resize(coinBaseSize);
-    // str.assign(ptr, ptr + coinBaseSize);
-    // //验证 hash 写到了父链的 coinbase
-    // int pos = str.find(hash.ToString());
-    // //std::cout << "npos: " << string::npos << "  pos:" << pos <<  std::endl;
-    // //std::cout << "hash: " << hash.GetHex() << std::endl;
-    // if (pos != str.npos) {
-    //     cout << "find hash in coinbase" << endl;
-    // }
+
     submitblock_StateCatcher sc(block.GetHash());
     RegisterValidationInterface(&sc);
     std::shared_ptr<const CBlock> shared_block = std::make_shared<const CBlock>(block);
@@ -1862,22 +1837,22 @@ uint32_t stringToUint32(const std::string& str) {
         size_t pos;
         uint32_t result = std::stoi(str, &pos);
 
-        // 检查是否整个字符串都被解析
+        
         if (pos != str.length()) {
-            // 如果没有完全解析，你可以在这里处理错误，比如抛出异常或返回一个默认值
+            
             throw std::invalid_argument("Not a valid uint32_t value");
         }
 
         return result;
     } catch (const std::out_of_range& e) {
-        // 处理超出范围的异常
+
         std::cerr << "Out of range error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
+       
         throw;
     } catch (const std::invalid_argument& e) {
-        // 处理无效参数异常
+    
         std::cerr << "Invalid argument error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
+
         throw;
     }
 }
@@ -1886,22 +1861,16 @@ int stringToInt(const std::string& str) {
         size_t pos;
         int result = std::stoi(str, &pos);
 
-        // 检查是否整个字符串都被解析
         if (pos != str.length()) {
-            // 如果没有完全解析，你可以在这里处理错误，比如抛出异常或返回一个默认值
             throw std::invalid_argument("Not a valid int value");
         }
 
         return result;
     } catch (const std::out_of_range& e) {
-        // 处理超出范围的异常
         std::cerr << "Out of range error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
         throw;
     } catch (const std::invalid_argument& e) {
-        // 处理无效参数异常
         std::cerr << "Invalid argument error: " << e.what() << std::endl;
-        // 在这里你可以选择返回默认值或者抛出异常，具体取决于你的需求
         throw;
     }
 }

@@ -68,9 +68,9 @@ void* getAuxBlockThread(void* arg) {
     //wh_ip_getAuxBlockThread
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(9988); //指定端口号
-    addr.sin_addr.s_addr = htonl(INADDR_ANY); //默认获取本机ip
-    //inet_pton(AF_INET, "10.162.196.131", &addr.sin_addr.s_addr); // 指定ip
+    addr.sin_port = htons(9988); 
+    addr.sin_addr.s_addr = htonl(INADDR_ANY); 
+ 
 
     int ret = bind(skfd, (struct sockaddr*)&addr, sizeof(addr));
     if (ret == -1) {
@@ -78,20 +78,20 @@ void* getAuxBlockThread(void* arg) {
         exit(-1);
     }
 
-    char recvbuf[1024] = {0}; //接收缓冲区
-    char address[35] = {0}; //地址
+    char recvbuf[1024] = {0}; 
+    char address[35] = {0}; 
 
-    struct sockaddr_in client; //父链某个节点的socket信息
+    struct sockaddr_in client; 
     socklen_t len = sizeof(client);
-    int id; //父链id
+    int id; 
 
-    //返回的hash和nbits
-    uint256 hash; //要返回给父链的 hash
-    uint32_t nbits; //要返回给父链的 nbits
+    
+    uint256 hash; 
+    uint32_t nbits;
     while (1) {
         //memset(recvbuf, 0, sizeof(recvbuf));
 
-        //会阻塞
+        
         std::cout<<"create start"<<endl;
         int ret = recvfrom(skfd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr*)&client, &len);
         if (ret != sizeof(recvbuf)) {
@@ -99,27 +99,20 @@ void* getAuxBlockThread(void* arg) {
             exit(-1);
         }
 
-        //从父链发来的数据获取 id 和 address
+
         memcpy(&id, recvbuf, sizeof(id));
         memcpy(address, recvbuf + sizeof(id), sizeof(address));
-        
-        // if (!createauxblock(address, hash, nbits, id)) { // id传入参数， address 和 hash 传出参数
-        //     perror("createauxblock failed!\n");
-        //     exit(-1);
-        // }
 
         UniValue Uad(address);
         UniValue Uid(id);
 
         JSONRPCRequest test;
         
-        // std::cout<<test.params.push_back(Uad)<<endl;
-        // std::cout<<test.params.push_back(Uid)<<endl;
+    
         
         test.params.setArray();
         test.params.push_back(Uad);
         test.params.push_back(Uid);
-        // std::cout<<"paramsnum:"<<test.params.size()<<endl;
         std::cout<<"created block address:"<<test.params[0].get_str()<<endl;
         std::cout<<"created block id:"<<test.params[1].get_int()<<endl;
         UniValue re = createauxblock(test);
@@ -127,8 +120,6 @@ void* getAuxBlockThread(void* arg) {
         hash = uint256S(re[0].get_str());
         
         nbits = std::stoul(re[4].get_str(), nullptr, 16);
-        // std::cout << "getauxblockhash: " << hash.GetHex() << std::endl;
-        // std::cout << "getauxblocknbits: " << nbits << std::endl;
         if (id == 1) {
             hash_to_nBits[hash.GetHex()].first = nbits;
         } else {
@@ -136,27 +127,17 @@ void* getAuxBlockThread(void* arg) {
         }
         
 
-        //std::cout << "BlockHash: " << hash.GetHex() << " nBits: " << nbits << std::endl;
 
-        //memset(recvbuf, 0, sizeof(recvbuf));
         memcpy(recvbuf, hash.begin(), 32);
         memcpy(recvbuf + 32, &nbits, sizeof(nbits));
-        // std::cout << "recvbuf: " << recvbuf << std::endl;
-        
-        // memcpy(hash.begin(), recvbuf, 32);
-        // memcpy(&nbits, recvbuf + 32, 4);
-        // std::cout << "getauxblockhash: " << hash.GetHex() << std::endl;
-        // std::cout << "getauxblocknbits: " << nbits << std::endl;
+   
 
         ret = sendto(skfd, recvbuf, sizeof(recvbuf), 0, (struct sockaddr*)&client, sizeof(client));
         if (ret != sizeof(recvbuf)) {
             perror("sendto failed!\n");
             exit(-1);
         }
-        // struct in_addr inp;
-        // inp.s_addr = client.sin_addr.s_addr;
-        //std::cout << "client ip: " << inet_ntoa(inp) << std::endl;
-        //std::cout << "send ret: " << ret << std::endl;
+   
     }
     close(skfd);
 }
@@ -173,9 +154,9 @@ void* submitAuxBlockThread(void* arg) {
     struct sockaddr_in addr;
     addr.sin_family = AF_INET;
     addr.sin_port = htons(9999);
-    //wh_ip_submitAuxBlockThread
+
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    //inet_pton(AF_INET, "10.162.144.73", &addr.sin_addr.s_addr);
+
     int ret = bind(skfd, (struct sockaddr*)&addr, sizeof(addr));
     if (ret == -1) {
         perror("bind");
@@ -184,7 +165,7 @@ void* submitAuxBlockThread(void* arg) {
     char recvbuf[1024] = {0}; 
     sockaddr_in client;
     socklen_t len = sizeof(client);
-    //BlockNumberCount::BlockNumberCountStart();
+
     int accept = 0; 
     while (1) {
         std::cout<<"submit start"<<endl;
@@ -201,7 +182,7 @@ void* submitAuxBlockThread(void* arg) {
         string str_hash = Uhash.ToString();
         
         string str_auxpow(ptr+32,1024-32);
-        // std::cout<<"auxpow:"<<str_auxpow<<endl;
+
         UniValue  hash(str_hash);
         UniValue auxpow(str_auxpow);
         request.params.setArray();
@@ -213,14 +194,14 @@ void* submitAuxBlockThread(void* arg) {
         
         accept = Uaccept.get_int();
         
-        // std::cout<<"acc"<<accept<<endl;
+
         if (accept==1||accept==2) {
             std::cout<<"Uaccept success"<<accept<<endl;
             std::cout<<"SubmitAuxBlock success"<<accept<<endl;
             recvbuf[0] = 1;
             sendto(skfd, recvbuf, sizeof(recvbuf), 0, (sockaddr*)&client, sizeof(client));
         }
-        //BlockNumberCount::add(accept);
+    
         if (accept == 1) {
             ++count1;
         } else if (accept == 2) {
