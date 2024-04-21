@@ -238,11 +238,11 @@ public:
         fMineBlocksOnDemand = false;
 
         checkpointData = (CCheckpointData) {
-        //     {
+            {
 
-        // }
-            boost::assign::map_list_of
-            (      //0, uint256S("0xd1fe73b87f5b2263faf24bbda99eec05b35d5d6d4eec83a9e6a87acbdf1e84e1"))
+         }
+            //boost::assign::map_list_of
+          //  (      //0, uint256S("0xd1fe73b87f5b2263faf24bbda99eec05b35d5d6d4eec83a9e6a87acbdf1e84e1"))
             // ( 104679, uint256S("0x35eb87ae90d44b98898fec8c39577b76cb1eb08e1261cfc10706c8ce9a1d01cf"))
             // ( 145000, uint256S("0xcc47cae70d7c5c92828d3214a266331dde59087d4a39071fa76ddfff9b7bde72"))
             // ( 371337, uint256S("0x60323982f9c5ff1b5a954eac9dc1269352835f47c2c5222691d80f0d50dcf053"))
