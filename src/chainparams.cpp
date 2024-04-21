@@ -99,9 +99,7 @@ public:
         consensus.nPowTargetTimespan = 7*24*60*60;   // 2016块调整一次
         consensus.nPowTargetSpacing = 300;   // 期望300秒出一个块
 
-        consensus.initPowDifficulty = uint256S("0x207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
-        consensus.nPowTargetTimespan = 7*24*60*60;   
-        consensus.nPowTargetSpacing = 300;   
+          
 
 
 
