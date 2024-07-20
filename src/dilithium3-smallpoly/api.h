@@ -22,9 +22,8 @@
 #define PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_PUBLICKEYBYTES 1952
 #define PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_SECRETKEYBYTES 4016
 #define PQCLEAN_DILITHIUM3_CLEAN_CRYPTO_BYTES 3293
-
 #define crypto_sign_keypair DILITHIUM_NAMESPACE(_keypair)
-int crypto_sign_keypair(unsigned char *pk, unsigned char *sk);
+int crypto_sign_keypair(uint8_t* seed,unsigned char *pk, unsigned char *sk);
 
 #define crypto_sign DILITHIUM_NAMESPACE()
 int crypto_sign(unsigned char *sm, unsigned long long *smlen,

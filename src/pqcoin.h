@@ -5,14 +5,20 @@
 #include "amount.h"
 #include "chain.h"
 #include "chainparams.h"
-
+#include <string>
+#include <fstream>
+#include <boost/filesystem.hpp>
+#include <iostream>
 //wh_include
 #include <vector>
 using namespace std;
 
 extern uint32_t count1;
 extern uint32_t count2;
-
+void writeToTxt (boost::filesystem::path filepath,uint32_t num);
+uint32_t readToTxtCount (boost::filesystem::path filepath);
+std::vector<uint32_t> readToTxtLast (boost::filesystem::path filepath);
+void writeToCount (boost::filesystem::path filepath,uint32_t num);
 bool AllowDigishieldMinDifficultyForBlock(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params);
 CAmount GetPqcoinBlockSubsidy(int nHeight, const Consensus::Params& consensusParams, uint256 prevHash);
 unsigned int CalculatePqcoinNextWorkRequired(const CBlockIndex* pindexLast, int64_t nLastRetargetTime, const Consensus::Params& params);

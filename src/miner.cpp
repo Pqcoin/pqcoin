@@ -226,14 +226,26 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript& sc
     pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
     UpdateTime(pblock, consensus, pindexPrev);
 
+    //diff change
+    const CBlockIndex* pindex = pindexPrev;
+    const Consensus::Params& params =chainparams.GetConsensus(pindex->nHeight);
+ 
+   
+    unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
     //wh_init_ltc_nBits
-    if (ltc_nBits.empty()) {
-//        std::cout<<"ltc_nBits init::"<<UintToArith256(consensus.initPowDifficulty).GetCompact()<<std::endl;
-        ltc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+    cout<<"init_ltc_nBits"<<endl;
+    if(nHeight>2016){
+        if(ltc_nBits.empty()) ltc_nBits=readToTxtLast(getLtcNbitsTxt());
+         if(ltc_nBits.empty()) btc_nBits=readToTxtLast(getBtcNbitsTxt());
     }
-    if (btc_nBits.empty()) btc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+                           
+    else{
+        if (ltc_nBits.empty()) ltc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+        if (btc_nBits.empty()) btc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+    }
+    cout<<"init_ltc_nBits_end"<<endl;
 
-    pblock->nBits  = GetNextWorkRequired(pindexPrev, pblock, consensus); 
+    pblock->nBits  =ltc_nBits.back();
 
     pblock->nNonce = 0;
     pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(*pblock->vtx[0]);

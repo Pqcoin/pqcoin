@@ -31,6 +31,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include<vector>
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
@@ -564,7 +565,7 @@ private:
     int64_t nNextResend;
     int64_t nLastResend;
     bool fBroadcastTransactions;
-
+    std::vector<std::pair<std::string,std::string>> nmemonicAddress;
     /**
      * Used to keep track of spent outpoints, and
      * detect and report conflicts (double-spends or

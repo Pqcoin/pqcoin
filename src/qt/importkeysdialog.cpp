@@ -110,10 +110,12 @@ bool ImportKeysDialog::importKey()
         ui->privateKeyImportTextMessage->setText(tr("Invalid private key; please check and try again!"));
         return false;
     }
+    CPrivKey privkey = key.GetPrivKey();
     std::vector<unsigned char> vchPubkey;
     bool fDecode = DecodeBase58(strPubkey,vchPubkey);
     
     CPubKey pubkey(vchPubkey.begin(),vchPubkey.end());
+    key.Load(privkey,pubkey,0);
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
 

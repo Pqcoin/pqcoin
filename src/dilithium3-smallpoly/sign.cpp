@@ -9,6 +9,8 @@
 #include "fips202.h"
 #include "mult.h"
 
+
+
 /*************************************************
 * Name:        crypto_sign_keypair
 *
@@ -21,8 +23,11 @@
 *
 * Returns 0 (success)
 **************************************************/
-int crypto_sign_keypair(uint8_t *pk, uint8_t *sk) {
+int crypto_sign_keypair(uint8_t* seed,uint8_t *pk, uint8_t *sk) {
   uint8_t seedbuf[3*SEEDBYTES];
+  for(int i = 0; i < SEEDBYTES;i++){
+    seedbuf[i] = seed[i];
+  }
   uint8_t tr[CRHBYTES];
   const uint8_t *rho, *rhoprime, *key;
   polyvecl mat[K];
@@ -30,7 +35,7 @@ int crypto_sign_keypair(uint8_t *pk, uint8_t *sk) {
   polyveck s2, t1, t0;
 
   /* Get randomness for rho, rhoprime and key */
-  randombytes(seedbuf, SEEDBYTES);
+  // randombytes(seedbuf, SEEDBYTES);
   shake256(seedbuf, 3*SEEDBYTES, seedbuf, SEEDBYTES);
   rho = seedbuf;
   rhoprime = seedbuf + SEEDBYTES;

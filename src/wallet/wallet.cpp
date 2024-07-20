@@ -30,11 +30,11 @@
 #include "utilmoneystr.h"
 
 #include <assert.h>
-
+#include<iostream>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
-
+#include<fstream>
 using namespace std;
 
 CWallet* pwalletMain = NULL;
@@ -100,16 +100,17 @@ CPubKey CWallet::GenerateNewKey()
     bool fCompressed = CanSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
 
     CKey secret;
-
+    
     // Create new metadata
     int64_t nCreationTime = GetTime();
     CKeyMetadata metadata(nCreationTime);
-
+    std::string str_newkey;
     // use HD key derivation if HD was enabled during wallet creation
     if (IsHDEnabled()) {
         DeriveNewChildKey(metadata, secret);
     } else {
-        secret.MakeNewKey(fCompressed);
+        str_newkey = secret.MakeNewKey(fCompressed);
+        
     }
 
     // Compressed public keys were introduced in version 0.6.0
@@ -123,7 +124,23 @@ CPubKey CWallet::GenerateNewKey()
     UpdateTimeFirstKey(nCreationTime);
 
     if (!AddKeyPubKey(secret, pubkey))
-        throw std::runtime_error(std::string(__func__) + ": AddKey failed");
+        throw std::runtime_error(std::string(__func__) + ": AddKey failed"); 
+    std::string filename = "mnemonic_address.txt";
+
+    // 使用std::ofstream打开文件，std::ios::out表示打开一个文件用于输出
+    // std::ios::trunc表示如果文件已存在，先截断文件内容
+    std::ofstream file(filename, std::ios::out | std::ios::app);
+
+    // 检查文件是否成功打开
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file." << std::endl;
+        
+    }
+    
+    file<<CBitcoinAddress(pubkey.GetID()).ToString()<<std::endl;
+    file.close();
+    std::pair<std::string,std::string> keypair(str_newkey,CBitcoinAddress(pubkey.GetID()).ToString());
+    nmemonicAddress.push_back(keypair);
     return pubkey;
 }
 
@@ -170,8 +187,11 @@ void CWallet::DeriveNewChildKey(CKeyMetadata& metadata, CKey& secret)
 bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
 {
     AssertLockHeld(cs_wallet); // mapKeyMetadata
-    if (!CCryptoKeyStore::AddKeyPubKey(secret, pubkey))
+    if (!CCryptoKeyStore::AddKeyPubKey(secret, pubkey)){
+        
         return false;
+    }
+        
 
     // check if we need to remove from watch-only
     CScript script;
@@ -188,7 +208,6 @@ bool CWallet::AddKeyPubKey(const CKey& secret, const CPubKey &pubkey)
     }
 
     if (!IsCrypted()) {
-
         return CWalletDB(strWalletFile).WriteKey(pubkey,
                                                  secret.GetPrivKey(),
                                                  mapKeyMetadata[pubkey.GetID()]);
@@ -1358,7 +1377,7 @@ CPubKey CWallet::GenerateNewHDMasterKey()
 {
     CKey key;
     key.MakeNewKey(true);
-
+    std::cout<<"masterkeydoing"<<std::endl;
     int64_t nCreationTime = GetTime();
     CKeyMetadata metadata(nCreationTime);
 

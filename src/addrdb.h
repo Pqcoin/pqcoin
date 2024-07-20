@@ -99,4 +99,15 @@ public:
     bool Read(banmap_t& banSet);
 };
 
+class   CDaa
+{
+private:
+    boost::filesystem::path pathCDaa;
+public:
+    CDaa();
+    bool Write(std::vector<uint32_t>vec,uint32_t num);
+    bool Read(std::vector<uint32_t>vec,uint32_t num);
+};
+
+
 #endif // BITCOIN_ADDRDB_H

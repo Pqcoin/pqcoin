@@ -12,17 +12,88 @@
 #include "util.h"
 #include "validation.h"
 #include "pqcoin-fees.h"
-
+#include "addrdb.h"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 // wh_include
 #include <unordered_map>
 #include <string>
 #include <fstream>
+#include <boost/filesystem.hpp>
+#include <iostream>
 using namespace std;
 vector<uint32_t> btc_nBits;
 vector<uint32_t> btc_block_counts;
 vector<uint32_t> ltc_nBits;
 vector<uint32_t> ltc_block_counts;
 unordered_map<string, pair<uint32_t, uint32_t>> hash_to_nBits;
+namespace fs = boost::filesystem;
+
+void writeToTxt (boost::filesystem::path filepath,uint32_t num){
+         std::fstream file;
+        file.open(filepath.string().c_str(),ios::app|ios::out);
+        if (!file) {
+            std::cerr << "Failed to open file for writing." << std::endl;
+        }
+        file<<num<< std::endl;
+        file.close();
+}
+
+void writeToCount (boost::filesystem::path filepath,uint32_t num){
+         std::fstream file;
+        file.open(filepath.string().c_str(),ios::out | ios::trunc);
+        if (!file) {
+            std::cerr << "Failed to open file for writing." << std::endl;
+        }
+        file<<num<< std::endl;
+        file.close();
+}
+
+std::vector<uint32_t> readToTxtLast (boost::filesystem::path filepath){
+         uint32_t lastNumber;
+          std::vector<uint32_t> numbers;
+         std::fstream file;
+        file.open(filepath.string().c_str(),ios::in);
+        if (!file) {
+            std::cerr << "Failed to open file for writing." << std::endl;
+        }
+        std::string line;
+        while (std::getline(file, line)) {
+       
+            try {
+            uint32_t number = atoi(line.c_str());
+            numbers.push_back(number);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid number format in line: " << line << std::endl;
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Number out of range for uint32_t: " << line << std::endl;
+        }
+    
+       }
+        file.close();
+        return numbers;
+}
+
+uint32_t readToTxtCount (boost::filesystem::path filepath){
+         uint32_t lastNumber;
+          std::vector<uint32_t> numbers;
+         std::fstream file;
+        file.open(filepath.string().c_str(),ios::in);
+        if (!file) {
+            std::cerr << "Failed to open file for writing." << std::endl;
+        }
+        std::string line;
+        while (std::getline(file, line)) {
+       
+           
+            uint32_t number = atoi(line.c_str());
+            file.close();
+            return number;
+        } 
+    
+       }
+        
+       
 
 // extern void resetCount();
 uint32_t count1;
@@ -189,8 +260,12 @@ void CalculatecoinNextWorkRequired_only_aux(const CBlockIndex *pindexLast, const
     file << "-------------------------********---------------------------" << std::endl;
     file << "just see    :params.DifficultyAdjustmentInterval() :  " << params.DifficultyAdjustmentInterval()<<std::endl;
     file << "btc_count[]:  ";
+
+    
     for (int i = 0; i < 4; i++)
     {
+        
+
         x_n[i] = *(btc_block_counts.end() - i - 1);
         file << x_n[i] << "  ";
     }
@@ -213,7 +288,7 @@ void CalculatecoinNextWorkRequired_only_aux(const CBlockIndex *pindexLast, const
     file << std::endl;
     double A_T = (double)nActualTimespan / retargetTimespan;
     file << "A/T:  " << A_T << std::endl;
-
+    file << "realheight" << nHeight << std::endl;
     // Limit adjustment step
 
     double temp_btc_1;
@@ -434,9 +509,13 @@ void CalculatecoinNextWorkRequired_only_aux(const CBlockIndex *pindexLast, const
     const arith_uint256 bnPowLimit = UintToArith256(params.powLimit);
     arith_uint256 bnNew_btc;
     arith_uint256 bnNew_ltc;
+    if(ltc_nBits.empty()) ltc_nBits=readToTxtLast(getLtcNbitsTxt());
+    if(btc_nBits.empty()) btc_nBits=readToTxtLast(getBtcNbitsTxt());
     bnNew_btc.SetCompact(btc_nBits.back());
     bnNew_ltc.SetCompact(ltc_nBits.back());
     file << "before:-----------------------------" << endl;
+    file << "bnNew_btc_nbits : " << bnNew_btc.GetCompact() << std::endl;
+    file << "bnNew_ltc_nbits : " << bnNew_ltc.GetCompact() << std::endl;
     file << "bnNew_btc_nbits : " << change_to_nbits(bnNew_btc.GetCompact()) << std::endl;
     file << "bnNew_ltc_nbits : " << change_to_nbits(bnNew_ltc.GetCompact()) << std::endl;
 
@@ -493,13 +572,19 @@ void CalculatecoinNextWorkRequired_only_aux(const CBlockIndex *pindexLast, const
         bnNew_ltc = ltc_bnPowLimit_low;
 
     file << "after:-----------------------------" << endl;
+    file << "bnNew_btc_nbits : " << bnNew_btc.GetCompact() << std::endl;
+    file << "bnNew_ltc_nbits : " << bnNew_ltc.GetCompact() << std::endl;
     file << "bnNew_btc_nbits : " << change_to_nbits(bnNew_btc.GetCompact()) << std::endl;
     file << "bnNew_ltc_nbits : " << change_to_nbits(bnNew_ltc.GetCompact()) << std::endl;
     file << timeString << std::endl;
     file << "*****************************************************" << std::endl;
-
+    
     btc_nBits.push_back(bnNew_btc.GetCompact());
     ltc_nBits.push_back(bnNew_ltc.GetCompact());
+    writeToTxt(getLtcNbitsTxt(),ltc_nBits.back());
+
+    writeToTxt(getBtcNbitsTxt(),btc_nBits.back());
+    
 }
 
 
@@ -843,7 +928,8 @@ void CalculatecoinNextWorkRequired_only_aux_720blocks(const CBlockIndex *pindexL
 }
 
 bool CheckAuxPowProofOfWork(const CBlockHeader &block, const Consensus::Params &params)
-{
+{   
+    static int flag =0;
     /* Except for legacy blocks with full version 1, ensure that
        the chain ID is correct.  Legacy blocks are not allowed since
        the merge-mining start, which is checked in AcceptBlockHeader
@@ -875,17 +961,44 @@ bool CheckAuxPowProofOfWork(const CBlockHeader &block, const Consensus::Params &
 
     if (!block.auxpow->check(block.GetHash(), block.GetChainId(), params))
         return error("%s : AUX POW is not valid", __func__);
-    if (block.auxpow->parentBlock.nVersion == 0x10000000)
+    if (block.auxpow->parentBlock.nVersion == 0x20000000)
     {
-        if (!CheckProofOfWork(block.auxpow->getParentBlockPoWHash(), hash_to_nBits[block.GetHash().GetHex()].first, params))
+        if (!CheckProofOfWork(block.auxpow->getParentBlockHash(), block.nBits, params))
             return error("%s : AUX proof of work failed", __func__);
+        // flag++;
+        // if(flag%2 == 0){
+        //     count1 ++;
+        //     flag = 0;
+        // }
+        // std::cout<<"count1"<<count1<<std::endl;
+        
     }
     else if (block.auxpow->parentBlock.nVersion == 0x20000000)
     {
-        if (!CheckProofOfWork(block.auxpow->getParentBlockHash(), hash_to_nBits[block.GetHash().GetHex()].second, params))
+       
+        if (!CheckProofOfWork(block.auxpow->getParentBlockHash(), block.nBits ,params))
+
             return error("%s : AUX proof of work failed", __func__);
+        // flag++;
+        // if(flag%2 == 0){
+        //     count2 ++;
+        //     flag = 0;
+        // }
+        
     }
-    return true;
+    //  time_t currentTime = std::time(nullptr);
+    //     tm* localTime = std::localtime(&currentTime);
+    //     char timeString[100];
+    //     strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
+    //      int year = 1900+localTime->tm_year;
+    //     string file_name_date = "pqcoin_aux_count_"+ std::to_string(localTime->tm_mon+1 )+ " _ "+std::to_string(localTime->tm_mday)+"_"+std::to_string(year);
+
+    //     fstream file(file_name_date, ios::app|ios::out);
+    //     file <<"-------------------------pqcoins_counts_240128---------------------------"<<std::endl;
+        
+    //     file << "count1" << "   " << count1 << std::endl;
+    //     file << "count2" << "   " << count2 << std::endl;
+     return true;
 }
 
 CAmount GetPqcoinBlockSubsidy(int nHeight, const Consensus::Params& consensusParams, uint256 prevHash)

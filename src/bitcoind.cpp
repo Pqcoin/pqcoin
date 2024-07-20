@@ -202,11 +202,11 @@ void* submitAuxBlockThread(void* arg) {
             sendto(skfd, recvbuf, sizeof(recvbuf), 0, (sockaddr*)&client, sizeof(client));
         }
     
-        if (accept == 1) {
-            ++count1;
-        } else if (accept == 2) {
-            ++count2;
-        }
+        // if (accept == 1) {
+        //     ++count1;
+        // } else if (accept == 2) {
+        //     ++count2;
+        // }
     }
     close(skfd);
 }

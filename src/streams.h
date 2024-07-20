@@ -513,6 +513,8 @@ public:
             throw std::ios_base::failure(feof(file) ? "CAutoFile::read: end of file" : "CAutoFile::read: fread failed");
     }
 
+    
+
     void ignore(size_t nSize)
     {
         if (!file)

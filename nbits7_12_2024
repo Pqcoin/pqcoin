@@ -1,0 +1,130 @@
+-------------------------********---------------------------
+just see    :params.DifficultyAdjustmentInterval() :  2016
+btc_count[]:  0  0  0  0  
+ltc_count[]:  2016  2016  2016  2016  
+nActualTimespan:             336  retargetTimespan:          604800
+A/T:  0.000555556
+realheight8065
+10.0*y_n[0]/x_n[0] :      inf         x_n[0]/10.0*y_n[0] :      0
+temp_btc_1 :      3       temp_ltc_1   0.25
+temp_btc_1_final :      3       temp_ltc_1_final   0.29
+temp_x_a :  0   temp_y_b   0
+pow(1.2,temp_btc_2):  1   pow(1.2,temp_ltc_2)   1
+temp_btc_1*temp_btc_2:  3     temp_ltc_1*temp_ltc_2   0.29
+temp_btc_3:  1         temp_ltc_3 :    0.29
+btc_3  0.25   ltc_3  0.0725
+btc_4  0.75   ltc_4  0.0725
+btc_4  0.25   ltc_4  0.0725
+0.2~btc_temp3*A_T~5   0.25   0.2~ltc_temp3*A_T~5  0.2
+before:-----------------------------
+bnNew_btc_nbits : 545259519
+bnNew_ltc_nbits : 545259519
+bnNew_btc_nbits : 4.65654e-10
+bnNew_ltc_nbits : 4.65654e-10
+nModulatedTimespan_btc    250     nModulatedTimespan_ltc     200
+   !!!!!bnNew_btc_over *= nModulatedTimespan_btc>bnPowLimit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!LTC!!!!!bnNew_ltc_over *= nModulatedTimespan_ltc>bnPowLimit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+after:-----------------------------
+bnNew_btc_nbits : 522241179
+bnNew_ltc_nbits : 536954798
+bnNew_btc_nbits : 4.65654e-07
+bnNew_ltc_nbits : 4.65655e-08
+2024-07-12 10:55:57
+*****************************************************
+-------------------------********---------------------------
+just see    :params.DifficultyAdjustmentInterval() :  2016
+btc_count[]:  0  0  0  0  
+ltc_count[]:  2016  2016  2016  2016  
+nActualTimespan:             336  retargetTimespan:          604800
+A/T:  0.000555556
+realheight10081
+10.0*y_n[0]/x_n[0] :      inf         x_n[0]/10.0*y_n[0] :      0
+temp_btc_1 :      3       temp_ltc_1   0.25
+temp_btc_1_final :      3       temp_ltc_1_final   0.29
+temp_x_a :  0   temp_y_b   0
+pow(1.2,temp_btc_2):  1   pow(1.2,temp_ltc_2)   1
+temp_btc_1*temp_btc_2:  3     temp_ltc_1*temp_ltc_2   0.29
+temp_btc_3:  1         temp_ltc_3 :    0.29
+btc_3  0.25   ltc_3  0.0725
+btc_4  0.75   ltc_4  0.0725
+btc_4  0.25   ltc_4  0.0725
+0.2~btc_temp3*A_T~5   0.25   0.2~ltc_temp3*A_T~5  0.2
+before:-----------------------------
+bnNew_btc_nbits : 522241179
+bnNew_ltc_nbits : 536954798
+bnNew_btc_nbits : 4.65654e-07
+bnNew_ltc_nbits : 4.65655e-08
+nModulatedTimespan_btc    250     nModulatedTimespan_ltc     200
+    !!LTC!!!!!bnNew_ltc_over *= nModulatedTimespan_ltc>bnPowLimit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+after:-----------------------------
+bnNew_btc_nbits : 520630566
+bnNew_ltc_nbits : 524388659
+bnNew_btc_nbits : 1.86262e-06
+bnNew_ltc_nbits : 2.32827e-07
+2024-07-12 10:57:24
+*****************************************************
+-------------------------********---------------------------
+just see    :params.DifficultyAdjustmentInterval() :  2016
+btc_count[]:  0  0  0  0  
+ltc_count[]:  2016  2016  2016  2016  
+nActualTimespan:             336  retargetTimespan:          604800
+A/T:  0.000555556
+realheight12097
+10.0*y_n[0]/x_n[0] :      inf         x_n[0]/10.0*y_n[0] :      0
+temp_btc_1 :      3       temp_ltc_1   0.25
+temp_btc_1_final :      3       temp_ltc_1_final   0.29
+temp_x_a :  0   temp_y_b   0
+pow(1.2,temp_btc_2):  1   pow(1.2,temp_ltc_2)   1
+temp_btc_1*temp_btc_2:  3     temp_ltc_1*temp_ltc_2   0.29
+temp_btc_3:  1         temp_ltc_3 :    0.29
+btc_3  0.25   ltc_3  0.0725
+btc_4  0.75   ltc_4  0.0725
+btc_4  0.25   ltc_4  0.0725
+0.2~btc_temp3*A_T~5   0.25   0.2~ltc_temp3*A_T~5  0.2
+before:-----------------------------
+bnNew_btc_nbits : 545259519
+bnNew_ltc_nbits : 545259519
+bnNew_btc_nbits : 4.65654e-10
+bnNew_ltc_nbits : 4.65654e-10
+nModulatedTimespan_btc    250     nModulatedTimespan_ltc     200
+   !!!!!bnNew_btc_over *= nModulatedTimespan_btc>bnPowLimit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!LTC!!!!!bnNew_ltc_over *= nModulatedTimespan_ltc>bnPowLimit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+after:-----------------------------
+bnNew_btc_nbits : 522241179
+bnNew_ltc_nbits : 536954798
+bnNew_btc_nbits : 4.65654e-07
+bnNew_ltc_nbits : 4.65655e-08
+2024-07-12 11:11:38
+*****************************************************
+-------------------------********---------------------------
+just see    :params.DifficultyAdjustmentInterval() :  2016
+btc_count[]:  0  0  0  0  
+ltc_count[]:  2016  2016  2016  2016  
+nActualTimespan:             336  retargetTimespan:          604800
+A/T:  0.000555556
+realheight14113
+10.0*y_n[0]/x_n[0] :      inf         x_n[0]/10.0*y_n[0] :      0
+temp_btc_1 :      3       temp_ltc_1   0.25
+temp_btc_1_final :      3       temp_ltc_1_final   0.29
+temp_x_a :  0   temp_y_b   0
+pow(1.2,temp_btc_2):  1   pow(1.2,temp_ltc_2)   1
+temp_btc_1*temp_btc_2:  3     temp_ltc_1*temp_ltc_2   0.29
+temp_btc_3:  1         temp_ltc_3 :    0.29
+btc_3  0.25   ltc_3  0.0725
+btc_4  0.75   ltc_4  0.0725
+btc_4  0.25   ltc_4  0.0725
+0.2~btc_temp3*A_T~5   0.25   0.2~ltc_temp3*A_T~5  0.2
+before:-----------------------------
+bnNew_btc_nbits : 522241179
+bnNew_ltc_nbits : 536954798
+bnNew_btc_nbits : 4.65654e-07
+bnNew_ltc_nbits : 4.65655e-08
+nModulatedTimespan_btc    250     nModulatedTimespan_ltc     200
+    !!LTC!!!!!bnNew_ltc_over *= nModulatedTimespan_ltc>bnPowLimit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+after:-----------------------------
+bnNew_btc_nbits : 520630566
+bnNew_ltc_nbits : 524388659
+bnNew_btc_nbits : 1.86262e-06
+bnNew_ltc_nbits : 2.32827e-07
+2024-07-12 11:13:26
+*****************************************************

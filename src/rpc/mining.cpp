@@ -25,7 +25,7 @@
 
 #include <memory>
 #include <stdint.h>
-
+#include "miner.h"
 #include <boost/assign/list_of.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -130,14 +130,18 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
         if (!pblocktemplate.get())
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Couldn't create new block");
         CBlock *pblock = &pblocktemplate->block;
+        
         {
             LOCK(cs_main);
             IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
         }
+        cout<<"diff:"<<change_to_nbits( pblock->nBits)<<endl;
         if (!nMineAuxPow) {
-            while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWHash(), pblock->nBits, Params().GetConsensus(nHeight))) {
+            cout<<"diffltcnbits:"<<change_to_nbits(ltc_nBits.back())<<endl;
+            while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWHash(), ltc_nBits.back(), Params().GetConsensus(nHeight))) {
                 ++pblock->nNonce;
                 --nMaxTries;
+               
             }
             //if (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount) std::cout << "nNonce: " << pblock->nNonce <<"bits"<< pblock->nBits<<std::endl;
         } else {
@@ -148,6 +152,7 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
                 --nMaxTries;
             }
         }
+    
 
         if (nMaxTries == 0) {
             break;
@@ -172,7 +177,8 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
             else {
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
             }
-        }
+        } 
+        
         ++nHeight;
         blockHashes.push_back(pblock->GetHash().GetHex());
 
@@ -182,56 +188,56 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
             coinbaseScript->KeepScript();
         }
         // ***jsr_change_0128
-        if (!nMineAuxPow){
-            ++count1;
-            // 记录一下什么时候自己出块
-            // **change_240127 Record the difficulty changes of pqcoins
-            time_t currentTime = std::time(nullptr);
-            tm* localTime = std::localtime(&currentTime);
-            char timeString[100];
-            strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
-            int year = 1900+localTime->tm_year;
-            string file_name_date = "pqcoin_count_"+ std::to_string(localTime->tm_mon+1 )+ " _ "+std::to_string(localTime->tm_mday)+"_"+std::to_string(year);
+        // if (!nMineAuxPow){
+        //     //++count1;
+        //     // 记录一下什么时候自己出块
+        //     // **change_240127 Record the difficulty changes of pqcoins
+        //     time_t currentTime = std::time(nullptr);
+        //     tm* localTime = std::localtime(&currentTime);
+        //     char timeString[100];
+        //     strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
+        //     int year = 1900+localTime->tm_year;
+        //     string file_name_date = "pqcoin_count_"+ std::to_string(localTime->tm_mon+1 )+ " _ "+std::to_string(localTime->tm_mday)+"_"+std::to_string(year);
 
-            fstream file(file_name_date, ios::app|ios::out);
-            file <<"-------------------------pqcoins_counts_240128---------------------------"<<std::endl;
-            file << nHeight << "   "<< timeString<<std::endl;
-            file << "count1" << "   " << count1 << std::endl;
-        } 
+        //     fstream file(file_name_date, ios::app|ios::out);
+        //     file <<"-------------------------pqcoins_counts_240128---------------------------"<<std::endl;
+        //     file << nHeight << "   "<< timeString<<std::endl;
+        //     file << "count1" << "   " << count1 << std::endl;
+        // } 
         // jsr_change
-        const CChainParams& chainparams = BlockAssembler(Params()).Getchainparams();
-        const Consensus::Params& consensus = chainparams.GetConsensus(nHeight);
-        if ((nHeight % consensus.DifficultyAdjustmentInterval()) == 0) {
-            ltc_block_counts.push_back(count1);
-            btc_block_counts.push_back(count2);
-            CBlockIndex* pindexPrev = chainActive.Tip();
-            if (ltc_block_counts.size() >= 4) 
-                CalculatecoinNextWorkRequired_only_aux(pindexPrev, consensus);
-            fstream file("nbitsfile.txt", ios::app|ios::out);
+        // const CChainParams& chainparams = BlockAssembler(Params()).Getchainparams();
+        // const Consensus::Params& consensus = chainparams.GetConsensus(nHeight);
+        // if ((nHeight % consensus.DifficultyAdjustmentInterval()) == 0) {
+        //     ltc_block_counts.push_back(count1);
+        //     btc_block_counts.push_back(count2);
+        //     CBlockIndex* pindexPrev = chainActive.Tip();
+        //     if (ltc_block_counts.size() >= 4) 
+        //         CalculatecoinNextWorkRequired_only_aux(pindexPrev, consensus);
+        //     fstream file("nbitsfile.txt", ios::app|ios::out);
 
-            time_t currentTime = std::time(nullptr);
-            tm* localTime = std::localtime(&currentTime);
-            char timeString[100];
-            strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
-            file << "ltc_nBits: ";
-            file.width(15);
-            file << change_to_nbits(ltc_nBits.back());
-            file << "ltc_count: ";
-            file.width(10);
-            file << count1;
-            file << " btc_nBits: ";
-            file.width(15);
-            file << change_to_nbits(btc_nBits.back());
-            file << " btc_count: ";
-            file.width(10);
-            file << count2;
-            file  << " nHeight: ";
-            file.width(10);
-            file << nHeight;
-            file << " " << timeString <<  std::endl;  
-            count1 = 0;
-            count2 = 0;
-        }
+        //     time_t currentTime = std::time(nullptr);
+        //     tm* localTime = std::localtime(&currentTime);
+        //     char timeString[100];
+        //     strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
+        //     file << "ltc_nBits: ";
+        //     file.width(15);
+        //     file << change_to_nbits(ltc_nBits.back());
+        //     file << "ltc_count: ";
+        //     file.width(10);
+        //     file << count1;
+        //     file << " btc_nBits: ";
+        //     file.width(15);
+        //     file << change_to_nbits(btc_nBits.back());
+        //     file << " btc_count: ";
+        //     file.width(10);
+        //     file << count2;
+        //     file  << " nHeight: ";
+        //     file.width(10);
+        //     file << nHeight;
+        //     file << " " << timeString <<  std::endl;  
+        //     count1 = 0;
+        //     count2 = 0;
+        // }
     }
     return blockHashes;
 }
@@ -1304,12 +1310,32 @@ static UniValue newAuxMiningCreateBlock(const CScript& scriptPubKey, int id)
     if(id != 1&& id!= 2){
         throw JSONRPCError(RPC_OUT_OF_MEMORY, "wrong id");
     }
+    
+    uint256 limit =uint256S("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+     unsigned int nProofOfWorkLimit = UintToArith256(limit).GetCompact();
+    if (ltc_block_counts.size() >= 4) {
+            if(ltc_nBits.empty()) ltc_nBits=readToTxtLast(getLtcNbitsTxt());
+            if(btc_nBits.empty()) btc_nBits=readToTxtLast(getBtcNbitsTxt());
+         }
+            
+        else  {
+            if(ltc_nBits.empty()) ltc_nBits.push_back(nProofOfWorkLimit);
+            if(btc_nBits.empty())  btc_nBits.push_back(nProofOfWorkLimit);
+            
+           
+        }
 
+    
     if (id == 1) {
         nbits = ltc_nBits.back();
     } else if (id == 2) {
         nbits = btc_nBits.back();
     }
+    else {
+        nbits = ltc_nBits.back();
+    }
+    cout<<"mining"<<change_to_nbits(ltc_nBits.back())<<endl;
+    cout<<"mining"<<change_to_nbits(btc_nBits.back())<<endl;
     // if (id == 1) {
     //     hash_to_nBits[hash.GetHex()].first = nbits;
     // } else {
@@ -1422,11 +1448,17 @@ static void newAuxMiningCreateBlock(const CScript& scriptPubKey, uint256 &hash, 
     
     hash = pblock->GetHash();
     
-
+    cout<<"ltc min diff"<<change_to_nbits(ltc_nBits.back())<<endl;
+    cout<<"btc min diff"<<change_to_nbits(btc_nBits.back())<<endl;
+    if(ltc_nBits.empty()) ltc_nBits=readToTxtLast(getLtcNbitsTxt());
+    if(btc_nBits.empty()) btc_nBits=readToTxtLast(getBtcNbitsTxt());
     if (id == 1) {
         nbits = ltc_nBits.back();
     } else if (id == 2) {
         nbits = btc_nBits.back();
+    }
+    else {
+        nbits = ltc_nBits.back();
     }
    
     // hash_to_nBits[hash.GetHex()] = nbits;

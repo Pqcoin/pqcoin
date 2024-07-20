@@ -107,6 +107,9 @@ using namespace std;
 const char * const BITCOIN_CONF_FILENAME = "pqcoin.conf";
 const char * const BITCOIN_PID_FILENAME = "pqcoind.pid";
 
+
+const char * const DAA_FILENAME = "daa.txt";
+
 CCriticalSection cs_args;
 map<string, string> mapArgs;
 static map<string, vector<string> > _mapMultiArgs;
@@ -587,6 +590,94 @@ const boost::filesystem::path &GetBackupDir()
     return path;
 }
 
+static const std::string daatxt_FILE = "daa.txt";
+
+boost::filesystem::path getLtcBlockCountsTxt()
+{
+    boost::filesystem::path path(GetArg("-LtcBlockCounts.txt", "LtcBlockCounts.txt"));
+    
+    if (!path.is_complete()) path = GetDataDir() / path;
+    return path;
+}
+
+boost::filesystem::path getBtcBlockCountsTxt()
+{
+    boost::filesystem::path path(GetArg("BtcBlockCounts.txt", "BtcBlockCounts.txt"));
+    
+    if (!path.is_complete()) path = GetDataDir() / path;
+    return path;
+}
+boost::filesystem::path getLtcNbitsTxt()
+{
+    boost::filesystem::path path(GetArg("LtcNbits.txt", "LtcNbits.txt"));
+    
+    if (!path.is_complete()) path = GetDataDir() / path;
+    return path;
+}
+boost::filesystem::path getBtcNbitsTxt()
+{
+    boost::filesystem::path path(GetArg("BtcNbits.txt", "BtcNbits.txt"));
+    
+    if (!path.is_complete()) path = GetDataDir() / path;
+    return path;
+}
+boost::filesystem::path getCount1Txt()
+{
+    boost::filesystem::path path(GetArg("Count1.txt", "Count1.txt"));
+    
+    if (!path.is_complete()) path = GetDataDir() / path;
+    return path;
+}
+boost::filesystem::path getCount2Txt()
+{
+    boost::filesystem::path path(GetArg("Count2.txt", "Count2.txt"));
+    
+    if (!path.is_complete()) path = GetDataDir() / path;
+    return path;
+}
+
+bool GenerateDAAtxt()
+{
+    
+    std::ofstream file;
+    boost::filesystem::path filepath1 = getLtcBlockCountsTxt();
+    if (!(boost::filesystem::exists(filepath1)))
+    file.open(filepath1.string().c_str());
+    if (!file.is_open()) {
+        LogPrintf("Unable to open daa.txt %s for writing\n", filepath1.string());
+        return false;
+    }
+    file.close();
+
+     boost::filesystem::path filepath2 = getBtcBlockCountsTxt();
+    if (!(boost::filesystem::exists(filepath2)))
+    file.open(filepath2.string().c_str());
+    file.close();
+
+    boost::filesystem::path filepath3 = getLtcNbitsTxt();
+    if (!(boost::filesystem::exists(filepath3)))
+    file.open(filepath3.string().c_str());
+    file.close();
+
+     boost::filesystem::path filepath4 = getBtcNbitsTxt();
+    if (!(boost::filesystem::exists(filepath4)))
+    file.open(filepath4.string().c_str());
+    file.close();
+
+     boost::filesystem::path filepath5 = getCount1Txt();
+    if (!(boost::filesystem::exists(filepath5)))
+    file.open(filepath5.string().c_str());
+    file.close();
+
+    boost::filesystem::path filepath6 = getCount2Txt();
+    if (!(boost::filesystem::exists(filepath6)))
+    file.open(filepath6.string().c_str());
+    file.close();
+
+    return true;
+}
+
+
 boost::filesystem::path GetConfigFile(const std::string& confPath)
 {
     boost::filesystem::path pathConfigFile(confPath);
@@ -627,8 +718,13 @@ boost::filesystem::path GetPidFile()
 {
     boost::filesystem::path pathPidFile(GetArg("-pid", BITCOIN_PID_FILENAME));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
+
+    
+    
+
     return pathPidFile;
 }
+
 
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid)
 {

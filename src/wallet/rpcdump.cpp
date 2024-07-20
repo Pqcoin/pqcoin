@@ -17,7 +17,7 @@
 #include "wallet/rpcutil.h"
 #include "merkleblock.h"
 #include "core_io.h"
-
+#include "key.h"
 #include <fstream>
 #include <stdint.h>
 
@@ -78,7 +78,78 @@ std::string DecodeDumpString(const std::string &str) {
     }
     return ret.str();
 }
+UniValue importmnemonic(const JSONRPCRequest& request){
+    
+    if (!EnsureWalletIsAvailable(request.fHelp))
+        return NullUniValue;
+    if (request.fHelp || request.params.size() < 1 || request.params.size() > 3)
+        throw runtime_error(
+            "importprivkey \"pqcoinprivkey\" ( \"label\" ) ( rescan )\n"
+            "\nAdds a private key (as returned by dumpprivkey) to your wallet.\n"
+            "\nArguments:\n"
+            "1. \"mnemonic\"  (string, required)12 mnemonic words seperated by ','\n"
+            "2. \"label\"            (string, optional, default=\"\") An optional label\n"
+            "3. rescan               (boolean, optional, default=true) Rescan the wallet for transactions\n"
+            "\nNote: This call can take minutes to complete if rescan is true.\n"
+            "\nExamples:\n"
+            "\nDump a private key\n"
+            + HelpExampleCli("dumpprivkey", "\"myaddress\"") +
+            "\nImport the private key with rescan\n"
+            + HelpExampleCli("importprivkey", "\"mykey\"") +
+            "\nImport using a label and without rescan\n"
+            + HelpExampleCli("importprivkey", "\"mykey\" \"testing\" false") +
+            "\nImport using default blank label and without rescan\n"
+            + HelpExampleCli("importprivkey", "\"mykey\" \"\" false") +
+            "\nAs a JSON-RPC call\n"
+            + HelpExampleRpc("importprivkey", "\"mykey\", \"testing\", false")
+        );
 
+    
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+    
+
+    EnsureWalletIsUnlocked();
+    std::string str_mnemonic= request.params[0].get_str();
+    CKey key;
+    
+    key.MakeNewKeyByMnemonic(str_mnemonic,1);
+    CPubKey pubkey = key.GetPubKey();
+    CPrivKey privkey = key.GetPrivKey();
+    assert(key.VerifyPubKey(pubkey));
+    CKeyID vchAddress = pubkey.GetID();
+     string strLabel = "";
+    {
+        pwalletMain->MarkDirty();
+
+
+        // Don't throw error in case a key is already there
+
+        pwalletMain->SetAddressBook(vchAddress, strLabel, "receive");
+        if (pwalletMain->HaveKey(vchAddress)){
+            std::cout<<"already have"<<endl;
+            return NullUniValue;
+        }
+        pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = 1;
+
+        if (!pwalletMain->AddKeyPubKey(key, pubkey))
+            throw JSONRPCError(RPC_WALLET_ERROR, "Error adding key to wallet");
+
+        // whenever a key is imported, we need to scan the whole chain
+        pwalletMain->UpdateTimeFirstKey(0);
+
+        if (1) {
+            pwalletMain->ScanForWalletTransactions(chainActive.Genesis(), true);
+            pwalletMain->ReacceptWalletTransactions();
+        }
+    }
+
+    return NullUniValue;
+    
+   
+
+
+    
+}
 UniValue importprivkey(const JSONRPCRequest& request)
 {
     if (!EnsureWalletIsAvailable(request.fHelp))
@@ -144,7 +215,7 @@ UniValue importprivkey(const JSONRPCRequest& request)
     if(!pubkey.IsValid())  throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Public key outside allowed range");
 
     key.Load(privkey,pubkey,0);
-
+    
     assert(key.VerifyPubKey(pubkey));
     CKeyID vchAddress = pubkey.GetID();
     {

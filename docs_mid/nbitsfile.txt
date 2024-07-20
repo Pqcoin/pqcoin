@@ -1,0 +1,2 @@
+ltc_nBits:     0.000229776ltc_count:         13 btc_nBits:     0.000229776 btc_count:       2003 nHeight:       2016 2024-04-24 13:09:28
+ltc_nBits:     0.000229776ltc_count:         91 btc_nBits:     0.000229776 btc_count:       1925 nHeight:       2016 2024-04-26 10:43:58

@@ -19,7 +19,7 @@
 #include "script/script_error.h"
 #include "sync.h"
 #include "versionbits.h"
-
+#include "pqcoin.h"
 #include <algorithm>
 #include <exception>
 #include <map>

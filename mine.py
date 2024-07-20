@@ -8,7 +8,7 @@ current_time = datetime.datetime.now()
 print("Current time:", current_time)
 while(n>=0):
 #os.system('pqucoin-cli sendtoaddress DURqHAqv77AoiqXxvLZmV4BtWbgSDpmn4G 1')
-    os.system('pqcoin-cli generatetoaddress 1 DRDbuSfEVtWeznB5R3e8nBKTv59fk4iQgC')
+    os.system('pqcoin-cli generatetoaddress 1 DMA7q3UP1yT9ZkGRe3UHAeLu9kfDGf6mhs')
     current_time = datetime.datetime.now()
 
 # 打印当前时间

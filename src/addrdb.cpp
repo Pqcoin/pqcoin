@@ -216,3 +216,81 @@ bool CAddrDB::Read(CAddrMan& addr, CDataStream& ssPeers)
 
     return true;
 }
+
+
+//wyt0710
+CDaa::CDaa()
+{
+    pathCDaa = GetDataDir() / "daa.dat";
+}
+
+bool CDaa::Write(std::vector<uint32_t>vec,uint32_t num)
+{
+    // // Generate random temporary filename
+    // unsigned short randv = 0;
+    // GetRandBytes((unsigned char*)&randv, sizeof(randv));
+    // std::string tmpfn = strprintf("peers.dat.%04x", randv);
+
+    // // serialize addresses, checksum data up to that point, then append csum
+    // CDataStream ssPeers(SER_DISK, CLIENT_VERSION);
+    // ssPeers << FLATDATA(Params().MessageStart());
+    // ssPeers << addr;
+    // uint256 hash = Hash(ssPeers.begin(), ssPeers.end());
+    // ssPeers << hash;
+
+    // open temp output file, and associate with CAutoFile
+    boost::filesystem::path pathTmp = pathCDaa;
+    FILE *file = fopen(pathTmp.string().c_str(), "wb");
+    CAutoFile fileout(file, SER_DISK, CLIENT_VERSION);
+    if (fileout.IsNull())
+        return error("%s: Failed to open file %s", __func__, pathTmp.string());
+
+    // Write and commit header, data
+    try {
+        
+        fileout <<vec;
+    }
+    catch (const std::exception& e) {
+        return error("%s: Serialize or I/O error - %s", __func__, e.what());
+    }
+    FileCommit(fileout.Get());
+    fileout.fclose();
+
+    
+
+    return true;
+}
+
+bool CDaa::Read(std::vector<uint32_t>vec,uint32_t num)
+{
+    // open input file, and associate with CAutoFile
+    FILE *file = fopen(pathCDaa.string().c_str(), "rb");
+    CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
+    if (filein.IsNull())
+        return error("%s: Failed to open file %s", __func__, pathCDaa.string());
+
+    // use file size to size memory buffer
+    uint64_t fileSize = boost::filesystem::file_size(pathCDaa);
+    uint64_t dataSize = 0;
+    // Don't try to resize to a negative number if file is small
+    if (fileSize >= sizeof(uint256))
+        dataSize = fileSize - sizeof(uint256);
+    std::vector<uint32_t> vchData;
+    vchData.resize(dataSize);
+    uint32_t hashIn;
+
+    // read data and checksum from file
+    try {
+        filein.read((char*)&vchData[0], dataSize);
+        filein >> hashIn;
+    }
+    catch (const std::exception& e) {
+        return error("%s: Deserialize or I/O error - %s", __func__, e.what());
+    }
+    filein.fclose();
+   
+
+     
+
+    return true;
+}

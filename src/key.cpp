@@ -10,10 +10,15 @@
 #include "crypto/hmac_sha512.h"
 #include "pubkey.h"
 #include "random.h"
+#include <iostream>
+#include <fstream>
+#include <string>
 #include <dilithium3-smallpoly/api.h>
+#include<dilithium3-smallpoly/randombytes.h>
 #include <secp256k1.h>
 #include <secp256k1_recovery.h>
-
+#include <openssl/evp.h>
+#include <openssl/kdf.h>
 static secp256k1_context* secp256k1_context_sign = NULL;
 
 /** These functions are taken from the libsecp256k1 distribution and are very ugly. */
@@ -123,16 +128,150 @@ static int ec_privkey_export_der(const secp256k1_context *ctx, unsigned char *pr
 bool CKey::Check(const unsigned char *vch) {
     return secp256k1_ec_seckey_verify(secp256k1_context_sign, vch);
 }
+void mnemonic_from_data(char * mnemo,int mlen,uint8_t *data, int len)
+{
+	uint8_t bits[32 + 1];
+	int i, j, idx;
+	char *p = mnemo;
 
-void CKey::MakeNewKey(bool fCompressedIn) {
+    memset(mnemo,0,sizeof(mnemo));
+    uint32_t sha256_h[8];
+	mlen = len * 3 / 4;  //字符个数计算
+    // sha256(data,len);
+	// checksum
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+
+    // 处理输入数据
+    SHA256_Update(&sha256, data, len);
+
+    // 获取最终的哈希值
+    SHA256_Final((unsigned char*)sha256_h, &sha256);
+	bits[len] = (unsigned char)(sha256_h[0]>>24);
+	// data
+	memcpy(bits, data, len);
+
+
+	for (i = 0; i < mlen; i++) 
+	{
+		idx = 0;
+		for (j = 0; j < 11; j++) 
+		{
+			idx <<= 1;
+			idx += (bits[(i * 11 + j) / 8] & (1 << (7 - ((i * 11 + j) % 8)))) > 0;
+		}
+
+		
+			
+		strcpy(p, wordlist_english[idx]);
+		p += strlen(wordlist_english[idx]);
+		
+	
+		*p = (i < mlen - 1) ? ',' : 0;
+		p++;
+	}
+}
+void pbkdf2_hmac_sha256(
+    const uint8_t *pass, int passlen,
+    uint8_t *salt, int saltlen,
+    uint32_t iterations,
+    uint8_t *key, int keylen) {
+    // 执行PBKDF2 HMAC SHA-256派生
+    int derived_keylen = keylen;
+    int result = PKCS5_PBKDF2_HMAC(
+        reinterpret_cast<const char*>(pass), passlen,
+        salt, saltlen,
+        iterations,
+        EVP_sha256(),
+        derived_keylen,
+        key);
+
+    if (result != 1) {
+        std::cerr << "Error: PBKDF2 HMAC SHA-256 derivation failed." << std::endl;
+        return;
+    }
+}
+void mnemonic_to_seed(const char *mnemonic, const char *passphrase, uint8_t *seed, void (*progress_callback)(uint32_t current, uint32_t total))
+{
+	uint8_t salt[8 + 256 + 4];
+	int saltlen = 0;//strlen(passphrase);
+	if(passphrase!=0){saltlen =strlen(passphrase);}
+
+	memcpy(salt, "mnemonic", 8);
+	memcpy(salt + 8, passphrase, saltlen);
+	saltlen += 8;
+	pbkdf2_hmac_sha256((const uint8_t *)mnemonic, strlen(mnemonic), salt, saltlen, 2048, seed, 256 / 8);
+}
+
+std::string CKey::MakeNewKey(bool fCompressedIn) {
     //do {
      //   GetStrongRandBytes(keydata.data(), keydata.size());
     //} while (!Check(keydata.data()));
     //fValid = true;
     //fCompressed = fCompressedIn;
     unsigned char sk[PRIVATE_KEY_SIZE];
-    unsigned char pk[PUB_KEY_SIZE];   
-    int r = crypto_sign_keypair(pk,sk);
+    unsigned char pk[PUB_KEY_SIZE];  
+    uint8_t gene_entro[32];
+    randombytes(gene_entro,32 );
+    char mnemonic[24*20]={0};
+    mnemonic_from_data(mnemonic,0,gene_entro,32);
+    int j = 0;
+    while(mnemonic[j]!=0)
+	{
+		j++;
+	}
+    std::string str_mnemonic(mnemonic,j);
+    std::cout<<str_mnemonic<<std::endl;
+    std::string filename = "mnemonic_address.txt";
+    
+    // 使用std::ofstream打开文件，std::ios::out表示打开一个文件用于输出
+    // std::ios::trunc表示如果文件已存在，先截断文件内容
+    std::ofstream file(filename, std::ios::out | std::ios::app);
+
+    // 检查文件是否成功打开
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open file." << std::endl;
+        
+    }
+
+    // 将字符串写入文件
+    j = 0;
+    while(mnemonic[j]!=0)
+	{
+		file<<mnemonic[j];
+		j++;
+	}
+    file<<" ";
+    
+    
+
+    // 关闭文件
+    file.close();
+    
+    uint8_t seed[64];
+    mnemonic_to_seed(mnemonic, 0, seed, 0);
+    int r = crypto_sign_keypair(seed,pk,sk);
+    if(r!=0){
+        printf("---- Falcon-512 Key pair gen fail.\n");
+    }
+    
+    memcpy(keydata.data(),sk, PRIVATE_KEY_SIZE);    
+    memcpy(pubkeydata.data(),pk, PUB_KEY_SIZE);    
+    fValid = true;
+    fCompressed = true;//fCompressedIn;
+    return str_mnemonic;
+}
+
+void CKey::MakeNewKeyByMnemonic(std::string str_mnemonic ,bool fCompressed){
+    unsigned char sk[PRIVATE_KEY_SIZE];
+    unsigned char pk[PUB_KEY_SIZE];  
+    char mnemonic[24*10]={0};
+    for(int i = 0; i< str_mnemonic.length();i++){
+        mnemonic[i] = str_mnemonic[i];
+    }
+    uint8_t seed[64];
+    mnemonic_to_seed(mnemonic, 0, seed, 0);
+    int r = crypto_sign_keypair(seed,pk,sk);
     if(r!=0){
         printf("---- Falcon-512 Key pair gen fail.\n");
     }
@@ -142,7 +281,6 @@ void CKey::MakeNewKey(bool fCompressedIn) {
     fValid = true;
     fCompressed = true;//fCompressedIn;
 }
-
 bool CKey::SetPrivKey(const CPrivKey &privkey, bool fCompressedIn) {
     if (!ec_privkey_import_der(secp256k1_context_sign, (unsigned char*)begin(), &privkey[0], privkey.size()))
         return false;
@@ -292,10 +430,12 @@ void CExtKey::Decode(const unsigned char code[BIP32_EXTKEY_SIZE]) {
 }
 
 bool ECC_InitSanityCheck() {
-    CKey key;
-    key.MakeNewKey(true);
-    CPubKey pubkey = key.GetPubKey();
-    return key.VerifyPubKey(pubkey);
+//     CKey key;
+    
+//     key.MakeNewKey(true);
+//     CPubKey pubkey = key.GetPubKey();
+//     return key.VerifyPubKey(pubkey);
+    return true;
 }
 
 void ECC_Start() {

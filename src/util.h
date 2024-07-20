@@ -102,6 +102,14 @@ bool TryCreateDirectory(const boost::filesystem::path& p);
 boost::filesystem::path GetDefaultDataDir();
 const boost::filesystem::path &GetDataDir(bool fNetSpecific = true);
 const boost::filesystem::path &GetBackupDir();
+ boost::filesystem::path getLtcBlockCountsTxt();
+boost::filesystem::path getBtcBlockCountsTxt();
+boost::filesystem::path getLtcNbitsTxt();
+boost::filesystem::path getBtcNbitsTxt();
+boost::filesystem::path getCount1Txt();
+boost::filesystem::path getCount2Txt();
+
+bool GenerateDAAtxt();
 void ClearDatadirCache();
 boost::filesystem::path GetConfigFile(const std::string& confPath);
 #ifndef WIN32

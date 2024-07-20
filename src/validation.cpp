@@ -5,7 +5,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "validation.h"
-
+#include "addrman.h"
+#include "addrdb.h"
 #include "arith_uint256.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -16,6 +17,7 @@
 #include "pqcoin.h"
 #include "pqcoin-fees.h"
 #include "hash.h"
+#include "util.h"
 #include "init.h"
 #include "policy/fees.h"
 #include "policy/policy.h"
@@ -39,7 +41,7 @@
 #include "validationinterface.h"
 #include "versionbits.h"
 #include "warnings.h"
-
+#include "pqcoin.h"
 #include <atomic>
 #include <sstream>
 
@@ -81,6 +83,12 @@ uint64_t nPruneTarget = 0;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 bool fEnableReplacement = DEFAULT_ENABLE_REPLACEMENT;
 
+
+extern vector<uint32_t> btc_nBits;
+extern vector<uint32_t> btc_block_counts;
+extern vector<uint32_t> ltc_nBits;
+extern vector<uint32_t> ltc_block_counts;
+int countNumAll;
 uint256 hashAssumeValid;
 
 //mlumin 5/2021: Changing this variable to a fee rate, because that's what it is, not a fee. Confusion bad.
@@ -2928,11 +2936,10 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     // We don't have block height as this is called without context (i.e. without
     // knowing the previous block), but that's okay, as the checks done are permissive
     // (i.e. doesn't check work limit or whether AuxPoW is enabled)
-    if (fCheckPOW && !CheckAuxPowProofOfWork(block, Params().GetConsensus(0)))
+      if (fCheckPOW && !CheckAuxPowProofOfWork(block, Params().GetConsensus(0)))
         return state.DoS(50, false, REJECT_INVALID, "high-hash", false, "proof of work failed");
     return true;
 }
-
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
@@ -3269,7 +3276,7 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
 // Exposed wrapper for AcceptBlockHeader
 bool ProcessNewBlockHeaders(const std::vector<CBlockHeader>& headers, CValidationState& state, const CChainParams& chainparams, const CBlockIndex** ppindex)
 {
-    {
+    {  
         LOCK(cs_main);
         for (const CBlockHeader& header : headers) {
             CBlockIndex *pindex = NULL; // Use a temp pindex instead of ppindex to avoid a const_cast
@@ -3281,6 +3288,7 @@ bool ProcessNewBlockHeaders(const std::vector<CBlockHeader>& headers, CValidatio
             }
         }
     }
+
     NotifyHeaderTip();
     return true;
 }
@@ -3376,9 +3384,13 @@ static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned 
     return (nFound >= nRequired);
 }
 
+
+
+
 bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool *fNewBlock)
 {
-    {
+    std::cout<<"1"<<std::endl;
+    {        
         CBlockIndex *pindex = NULL;
         if (fNewBlock) *fNewBlock = false;
         CValidationState state;
@@ -3396,10 +3408,119 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
             return error("%s: AcceptBlock FAILED", __func__);
         }
     }
+    std::cout<<"1"<<std::endl;
     NotifyHeaderTip();
     CValidationState state; // Only used to report errors, not invalidity - ignore it
     if (!ActivateBestChain(state, chainparams, pblock))
         return error("%s: ActivateBestChain failed", __func__);
+    const CBlock& block = *pblock;
+    int nHeightStart = chainActive.Height();
+    int nHeight = nHeightStart;
+     const Consensus::Params& consensus = chainparams.GetConsensus(nHeight);
+     std::cout<<nHeight<<std::endl;
+    
+    if(nHeight!=1&&nHeight % consensus.DifficultyAdjustmentInterval()!=0 && count1==0 && count2==0){
+        count1=readToTxtCount(getCount1Txt());
+        count2=readToTxtCount(getCount2Txt());
+    }
+    std::cout<<"1"<<std::endl;
+    
+    if (block.auxpow!=NULL){
+        if (block.auxpow->parentBlock.nVersion == 0x20000000){
+         count2 ++;
+        }
+    //cmx
+        else{
+            count1++;
+        }  
+    }
+    else {    
+        count1 ++;     
+    }
+    std::cout<<getCount1Txt()<<std::endl;
+    writeToCount(getCount1Txt(),count1);
+    writeToCount(getCount2Txt(),count2);
+
+    std::cout<<"1"<<std::endl;
+    time_t currentTime = std::time(nullptr);
+    tm* localTime = std::localtime(&currentTime);
+    char timeString[100];
+    strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
+        int year = 1900+localTime->tm_year;
+    string file_name_date = "pqcoin_aux_count_"+ std::to_string(localTime->tm_mon+1 )+ " _ "+std::to_string(localTime->tm_mday)+"_"+std::to_string(year);
+
+    fstream file(file_name_date, ios::app|ios::out);
+    file <<"-------------------------pqcoins_counts_240701---------------------------"<<std::endl;
+    
+    file << "count1" << "   " << count1 << std::endl;
+    file << "count2" << "   " << count2 << std::endl;
+    file << "nbits" << "   "  <<change_to_nbits(pblock->nBits) << std::endl;
+    file << "notchange"  << "   " << pblock->nBits<< std::endl;
+    // CPureBlockHeader& miningHeader11 = pblock->auxpow->parentBlock;
+    // file << "miningHeader.GetPoWHash()" << miningHeader11.GetPoWHash() << std::endl;
+    
+    file << "before daa: "<<endl;
+    file << "count1" << "   " << count1 << std::endl;
+    file << "count2" << "   " << count2 << std::endl;
+    file << "nheight" <<"   " << nHeight <<std::endl;
+    //nHeight = (int) count1 + (int) count2;
+    file << "realnheight:  " << nHeight <<std::endl;
+   
+    if ((nHeight % consensus.DifficultyAdjustmentInterval()) == 0) {
+        if(nHeight>2016){
+            if(ltc_block_counts.empty()) btc_block_counts=readToTxtLast(getLtcBlockCountsTxt());
+            if(btc_block_counts.empty()) btc_block_counts=readToTxtLast(getBtcBlockCountsTxt());
+        }
+        
+        ltc_block_counts.push_back(count1);
+        btc_block_counts.push_back(count2);
+
+        writeToTxt(getLtcBlockCountsTxt(),ltc_block_counts.back());
+        writeToTxt(getBtcBlockCountsTxt(),btc_block_counts.back());
+
+        CBlockIndex* pindexPrev = chainActive.Tip();
+        if (ltc_block_counts.size() >= 4) 
+            CalculatecoinNextWorkRequired_only_aux(pindexPrev, consensus);
+        else  {
+            ltc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+            btc_nBits.push_back(UintToArith256(consensus.initPowDifficulty).GetCompact());
+            writeToTxt(getLtcNbitsTxt(),ltc_nBits.back());
+            writeToTxt(getBtcNbitsTxt(),btc_nBits.back());
+        }
+        fstream file1("nbitsfile.txt", ios::app|ios::out);
+        time_t currentTime = std::time(nullptr);
+        tm* localTime = std::localtime(&currentTime);
+        char timeString[100];
+        strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", localTime);
+        if(ltc_nBits.empty())    ltc_nBits=readToTxtLast(getLtcNbitsTxt());
+        if(btc_nBits.empty()) btc_nBits=readToTxtLast(getBtcNbitsTxt());
+        file1 << "ltc_nBits: ";
+        file1.width(15);
+        file1 << ltc_nBits.back()<<"  "<< change_to_nbits(ltc_nBits.back());
+        file1.width(15);
+        file1 << "ltc_count: ";
+        file1.width(10);
+        file1 << count1;
+        file1 << " btc_nBits: ";
+        file1.width(15);
+        file1 <<btc_nBits.back()<<"  "<< change_to_nbits(btc_nBits.back());
+        file1.width(15);
+        file1 << " btc_count: ";
+        file1.width(10);
+        file1 << count2;
+        file1  << " nHeight: ";
+        file1.width(10);
+        file1 << nHeight;
+        file1 << " " << timeString <<  std::endl;  
+        count1 = 0;
+        count2 = 0;
+        writeToCount(getCount1Txt(),count1);
+        writeToCount(getCount2Txt(),count2);
+        file << "after daa: "<<endl;
+        file << "count1" << "   " << count1 << std::endl;
+        file << "count2" << "   " << count2 << std::endl;
+        file << "nheight" <<"   " << nHeight <<std::endl;
+        }
     return true;
 }
 
